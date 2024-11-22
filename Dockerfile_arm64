@@ -1,11 +1,15 @@
-FROM node:lts-alpine
-
-EXPOSE 3001
-ENV TZ=Asia/Shanghai
+FROM node:lts-alpine AS builder
 
 RUN apk add --no-cache bash  curl
 WORKDIR /app
 COPY . .
 RUN yarn config set registry https://registry.npmmirror.com/
+RUN yarn global add pkg @vercel/ncc
 RUN yarn
-CMD ["npm", "run", "start"]
+RUN yarn run pkg:arm64
+
+FROM alpine:latest
+EXPOSE 3001
+ENV TZ=Asia/Shanghai
+COPY --from=builder --chmod=755 /app/dist/app /usr/local/bin/
+CMD ["/usr/local/bin/app"]
