@@ -380,6 +380,7 @@ export class BaseH5st {
       let value = params[key as keyof H5stSignParamsType];
       if (value != undefined) {
         if (key === 'body') {
+          console.log(value)
           value = CryptoJS.SHA256(value).toString();
         }
         filterParams[key as keyof H5stSignParamsType] = value;
