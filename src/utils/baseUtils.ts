@@ -294,3 +294,7 @@ export function toUint8ArrayFromNumber(num: number): Uint8Array {
   }
   return new Uint8Array(buffer);
 }
+
+export function isNullOrUndefined(value: any): boolean {
+  return value === undefined || value === null;
+}

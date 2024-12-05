@@ -7,6 +7,7 @@
 import * as CryptoJS from 'crypto-js';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
+import { isNullOrUndefined } from '../../utils/baseUtils';
 
 interface Format {
   stringify(cipherParams: CryptoJS.lib.CipherParams): string;
@@ -69,7 +70,7 @@ export class CustomAlgorithm {
       stringify: (wordArray: CryptoJS.lib.WordArray): string => {
         const convertIndex = this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex;
 
-        if (!convertIndex) {
+        if (isNullOrUndefined(convertIndex)) {
           return CryptoJS.enc.Hex.stringify(wordArray);
         }
 
@@ -207,7 +208,7 @@ export class CustomAlgorithm {
     if (typeof key === 'string') {
       const convertIndex = this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hmac;
 
-      if (!convertIndex) {
+      if (isNullOrUndefined(convertIndex)) {
         return key;
       }
 

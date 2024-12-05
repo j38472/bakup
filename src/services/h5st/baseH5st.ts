@@ -15,6 +15,7 @@ import {
   getRandomIDPro,
   getRandomInt10,
   isEmpty,
+  isNullOrUndefined,
   isPlainObject,
   isSafeParamValue,
   selectRandomElements,
@@ -380,7 +381,6 @@ export class BaseH5st {
       let value = params[key as keyof H5stSignParamsType];
       if (value != undefined) {
         if (key === 'body') {
-          console.log(value)
           value = CryptoJS.SHA256(value).toString();
         }
         filterParams[key as keyof H5stSignParamsType] = value;
@@ -450,7 +450,7 @@ export class BaseH5st {
    */
   envSign(message: string): string {
     // 4.8.1开始不在使用AES算法，借助 Hex 魔改参数定位
-    if (this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex) {
+    if (!isNullOrUndefined(this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex)) {
       return this.algos.enc.Base64.encode(this.algos.enc.Utf8.parse(message));
     }
 
@@ -475,7 +475,7 @@ export class BaseH5st {
     try {
       let envDecrypt: string;
       // 4.8.1开始不在使用AES算法，借助 Hex 魔改参数定位
-      if (this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex) {
+      if (!isNullOrUndefined(this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex)) {
         const wordArray = this.algos.enc.Base64.decode(envSign);
         envDecrypt = this.algos.enc.Utf8.stringify(wordArray);
       } else {
