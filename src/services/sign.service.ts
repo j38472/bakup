@@ -16,7 +16,7 @@ export class SignService {
   getSign(reqBody: SignReqBody): SignRes {
     const client = reqBody.client,
       clientVersion = reqBody.clientVersion,
-      uuid = getRandomIDPro({ size: 16, customDict: '0123456789abcdef' });
+      uuid = reqBody.uuid || getRandomIDPro({ size: 16, customDict: '0123456789abcdef' });
 
     const st = Date.now(),
       version = [
