@@ -8,6 +8,7 @@ import * as CryptoJS from 'crypto-js';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { isNullOrUndefined } from '../../utils/baseUtils';
+import { TransformMessageOptions } from './type';
 
 interface Format {
   stringify(cipherParams: CryptoJS.lib.CipherParams): string;
@@ -198,6 +199,10 @@ export class CustomAlgorithm {
 
   addSalt(message: CryptoJS.lib.WordArray | string): CryptoJS.lib.WordArray | string {
     if (typeof message === 'string') {
+      const transformMessageOptions = this.clsService.get('h5stConfig.customAlgorithm')?.transformMessageOptions
+      if (transformMessageOptions) {
+        message = this.transformMessage(message, transformMessageOptions);
+      }
       const salt = this.clsService.get('h5stConfig.customAlgorithm')?.salt ?? '';
       return message + salt;
     }
@@ -242,5 +247,28 @@ export class CustomAlgorithm {
       }
     }
     return CryptoJS.lib.WordArray.create(words, nBytes);
+  }
+
+  transformMessage(plainText: string, options: TransformMessageOptions) {
+    const { map, segments, multiplier } = options;
+
+    const transformSegments = () => {
+      const segmentLength = Math.floor(plainText.length / segments);
+
+      return Array.from({ length: segments }, (_, i) => {
+        const startIndex = i * segmentLength;
+        const endIndex = i === segments - 1 ? plainText.length : startIndex + segmentLength;
+
+        const segmentSum = plainText
+          .slice(startIndex, endIndex)
+          .split('')
+          .reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
+        return map.charAt((segmentSum * multiplier) % 64);
+      });
+    };
+
+    const transformedSegments = transformSegments();
+    return plainText + transformedSegments.join('');
   }
 }

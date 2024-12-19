@@ -41,6 +41,12 @@ export interface defaultAlgorithmType {
   local_key_3: typeof CryptoJS.HmacSHA256;
 }
 
+export interface TransformMessageOptions {
+  map?: string;
+  segments?: number;
+  multiplier?: number;
+}
+
 /**
  * h5st 算法参数类型
  */
@@ -81,6 +87,7 @@ export interface H5stAlgoConfigType {
       hmac?: number;
       hex?: number;
     };
+    transformMessageOptions?: TransformMessageOptions;
   };
 }
 
@@ -181,6 +188,7 @@ export enum H5stVersion {
   '4.9.5' = '4.9.5',
   '4.9.6' = '4.9.6',
   '4.9.7' = '4.9.7',
+  '5.0.0' = '5.0.0',
   'xcx3.1.0' = 'xcx3.1.0',
   'xcx4.2.0' = 'xcx4.2.0',
   'xcx4.7.1' = 'xcx4.7.1',
