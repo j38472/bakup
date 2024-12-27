@@ -5,12 +5,12 @@
  */
 
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { ValidationExceptionFilter } from './filter/validation-exception.filter';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { AppModule } from './app.module';
 import { AppClusterService } from './app_cluster.service';
 import { BusinessExceptionFilter } from './filter/business-exception.filter';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { ValidationExceptionFilter } from './filter/validation-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

@@ -4,10 +4,10 @@
  * Author: zhx47
  */
 
-import { Injectable } from '@nestjs/common';
-import { SignService } from './sign.service';
 import * as CryptoJS from 'crypto-js';
+import { Injectable } from '@nestjs/common';
 import { SignReqBody } from '../controller/dto/req.dto';
+import { SignService } from './sign.service';
 import { BusinessError } from '../utils/error';
 
 @Injectable()

@@ -3,11 +3,11 @@
  * Description: 获取redis配置
  * Author: zhx47
  */
-import { strictBoolean } from '../utils/baseUtils';
-import { registerAs } from '@nestjs/config';
 import * as process from 'node:process';
+import { registerAs } from '@nestjs/config';
+import { strictBoolean } from '../utils/baseUtils';
 
-export default registerAs('cache', () => ({
+export const cacheConfig = registerAs('cache', () => ({
   memory: strictBoolean(process.env.MEMORY_CACHE),
   redis: strictBoolean(process.env.REDIS_CACHE),
   options: {

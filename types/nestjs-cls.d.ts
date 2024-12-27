@@ -5,7 +5,7 @@
  */
 
 import 'nestjs-cls';
-import { H5stAlgoConfigType, H5stAlgoContextType } from '../src/services/h5st/type';
+import { H5stAlgoConfigType, H5stAlgoContextType } from '../src/core';
 
 /**
  * 重新定义默认的上下文对象的类型

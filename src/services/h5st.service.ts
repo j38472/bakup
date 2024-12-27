@@ -4,11 +4,11 @@
  * Author: zhx47
  */
 
-import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
+import { Injectable } from '@nestjs/common';
 import { H5stReqBody } from '../controller/dto/req.dto';
-import { H5stFactory } from '../factory/h5st.factory';
 import { H5stRes } from '../controller/dto/res.dto';
+import { H5stFactory } from '../core';
 
 @Injectable()
 export class H5stService {

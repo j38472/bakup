@@ -4,9 +4,9 @@
  * Author: zhx47
  */
 
-import { H5stSignParamsType, H5stSignResultType, SignResultType } from '../../services/h5st/type';
 import { stringify } from 'qs';
 import { ClsServiceManager } from 'nestjs-cls';
+import { H5stSignParamsType, H5stSignResultType, SignResultType } from '../../core';
 
 /**
  * 定义响应中的 code

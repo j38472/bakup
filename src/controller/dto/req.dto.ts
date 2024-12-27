@@ -5,10 +5,10 @@
  */
 
 import 'reflect-metadata';
-import { IsEnum, IsJSON, IsNotEmpty, ValidateIf, ValidateNested } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { H5stSignParamsType, H5stVersion } from '../../services/h5st/type';
+import { IsEnum, IsJSON, IsNotEmpty, ValidateIf, ValidateNested } from 'class-validator';
 import { ContainsChar } from '../../utils/baseUtils';
+import { H5stSignParamsType, H5stVersion } from '../../core';
 
 /**
  * h5st 的业务信息，真正发送给京东的信息，这里只定义三个最常用的字段含义
@@ -33,7 +33,7 @@ export class H5stReqBody {
   @Type(() => String)
   @IsNotEmpty({ message: '版本不能为空' })
   @IsEnum(H5stVersion, { message: '版本号不正确' })
-  version: H5stVersion = H5stVersion['5.0.0'];
+  version: H5stVersion = H5stVersion['5.0.1'];
 
   @Type(() => String)
   @ValidateIf((o: H5stReqBody) => o.version && !o.version.startsWith('xcx'))

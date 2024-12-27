@@ -5,9 +5,9 @@
  */
 
 import * as os from 'os';
+import { Cluster } from 'cluster';
 import { Logger } from '@nestjs/common';
 import * as clusterModule from 'cluster';
-import { Cluster } from 'cluster';
 
 const cluster = clusterModule as unknown as Cluster;
 

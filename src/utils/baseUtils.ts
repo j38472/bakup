@@ -5,7 +5,7 @@
  */
 
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { DEVICE_LISTS } from '../config/device.config';
+import { DEVICE_LISTS } from '../config';
 
 /**
  * 将字符串进行 URL 安全的 Base64 解码

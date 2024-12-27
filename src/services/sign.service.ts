@@ -4,11 +4,11 @@
  * Author: zhx47
  */
 
+import * as CryptoJS from 'crypto-js';
 import { Injectable } from '@nestjs/common';
 import { SignReqBody } from '../controller/dto/req.dto';
 import { SignRes } from '../controller/dto/res.dto';
 import { getRandomDevice, getRandomElement, getRandomIDPro } from '../utils/baseUtils';
-import * as CryptoJS from 'crypto-js';
 import { BusinessError } from '../utils/error';
 
 @Injectable()
