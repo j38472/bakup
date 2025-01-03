@@ -12,7 +12,7 @@ import { H5stVersion, KVType } from './type';
 import { H5stAlgoConfigCollection, H5stInitConfig } from './config';
 import { CustomAlgorithm } from '../algorithm';
 import { LocalTokenVersion } from '../token';
-import { TokenFactory } from '../token.factory'
+import { TokenFactory } from '../token.factory';
 
 @Injectable()
 export class H5st495 extends BaseH5st {

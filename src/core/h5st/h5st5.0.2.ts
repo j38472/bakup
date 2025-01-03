@@ -1,6 +1,6 @@
 /**
- * File: h5st4.9.4.ts
- * Description: h5st4.9.4 算法
+ * File: h5st5.0.2.ts
+ * Description: h5st5.0.2 算法
  * Author: zhx47
  */
 
@@ -15,8 +15,8 @@ import { LocalTokenVersion } from '../token';
 import { TokenFactory } from '../token.factory';
 
 @Injectable()
-export class H5st494 extends BaseH5st {
-  protected readonly logger = new Logger(H5st494.name);
+export class H5st502 extends BaseH5st {
+  protected readonly logger = new Logger(H5st502.name);
   constructor(
     protected readonly clsService: ClsService,
     @Inject(CACHE_MANAGER) protected readonly cacheManager: Cache,
@@ -27,7 +27,7 @@ export class H5st494 extends BaseH5st {
   }
 
   init(h5stInitConfig: H5stInitConfig) {
-    super.init(h5stInitConfig, H5stAlgoConfigCollection[H5stVersion['4.9.4']]);
+    super.init(h5stInitConfig, H5stAlgoConfigCollection[H5stVersion['5.0.2']]);
   }
 
   __genSign(key: string, body: KVType[]): string {

@@ -1,4 +1,4 @@
-export { TokenType, LocalTokenVersion, LocalTokenType } from './type';
-export { BaseLocalToken } from './baseLocalToken';
-export { LocalTokenV3 } from './localTokenV3';
-export { LocalTokenV4 } from './localTokenV4';
+export * from './type';
+export * from './baseLocalToken';
+export * from './localTokenV3';
+export * from './localTokenV4';
