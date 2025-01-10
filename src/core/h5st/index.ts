@@ -20,6 +20,7 @@ export * from './h5st4.9.7';
 export * from './h5st5.0.0';
 export * from './h5st5.0.1';
 export * from './h5st5.0.2';
+export * from './h5st5.0.3';
 export * from './xcx3.1.0';
 export * from './xcx4.2.0';
 export * from './xcx4.7.1';

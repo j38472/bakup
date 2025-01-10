@@ -27,6 +27,7 @@ import {
   H5st500,
   H5st501,
   H5st502,
+  H5st503,
   Xcx310,
   Xcx420,
   Xcx471,
@@ -59,6 +60,7 @@ export class H5stFactory {
     @Inject(H5st500) private readonly h5st500: H5st500,
     @Inject(H5st501) private readonly h5st501: H5st501,
     @Inject(H5st502) private readonly h5st502: H5st502,
+    @Inject(H5st503) private readonly h5st503: H5st503,
     @Inject(Xcx310) private readonly xcx310: Xcx310,
     @Inject(Xcx420) private readonly xcx420: Xcx420,
     @Inject(Xcx471) private readonly xcx471: Xcx471,
@@ -84,6 +86,7 @@ export class H5stFactory {
     this.instances.set(H5stVersion['5.0.0'], this.h5st500);
     this.instances.set(H5stVersion['5.0.1'], this.h5st501);
     this.instances.set(H5stVersion['5.0.2'], this.h5st502);
+    this.instances.set(H5stVersion['5.0.3'], this.h5st503);
     this.instances.set(H5stVersion['xcx3.1.0'], this.xcx310);
     this.instances.set(H5stVersion['xcx4.2.0'], this.xcx420);
     this.instances.set(H5stVersion['xcx4.7.1'], this.xcx471);
