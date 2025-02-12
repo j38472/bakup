@@ -20,6 +20,7 @@ import { SignService } from './services/sign.service';
 import { CommandService } from './services/command.service';
 import { CustomAlgorithm } from './core/algorithm';
 import {
+  H5st410,
   H5st420,
   H5st431,
   H5st433,
@@ -42,6 +43,8 @@ import {
   H5st502,
   H5st503,
   H5st504,
+  H5st505,
+  H5st506,
   Xcx310,
   Xcx420,
   Xcx471,
@@ -82,6 +85,7 @@ import { TokenFactory, H5stFactory } from './core';
     LocalTokenV3,
     LocalTokenV4,
     TokenFactory,
+    H5st410,
     H5st420,
     H5st431,
     H5st433,
@@ -104,6 +108,8 @@ import { TokenFactory, H5stFactory } from './core';
     H5st502,
     H5st503,
     H5st504,
+    H5st505,
+    H5st506,
     Xcx310,
     Xcx420,
     Xcx471,

@@ -143,6 +143,7 @@ export interface EnvExtendType {
   bu6?: string | number;
   bu7?: string | number;
   bu8?: string | number;
+  bu10?: string | number;
   l?: string | number;
   ls?: string | number;
   wd?: string | number;
@@ -154,6 +155,7 @@ export interface EnvExtendType {
  * 目前支持的算法版本枚举
  */
 export enum H5stVersion {
+  '4.1.0' = '4.1.0',
   '4.2.0' = '4.2.0',
   '4.3.1' = '4.3.1',
   '4.3.3' = '4.3.3',
@@ -176,6 +178,8 @@ export enum H5stVersion {
   '5.0.2' = '5.0.2',
   '5.0.3' = '5.0.3',
   '5.0.4' = '5.0.4',
+  '5.0.5' = '5.0.5',
+  '5.0.6' = '5.0.6',
   'xcx3.1.0' = 'xcx3.1.0',
   'xcx4.2.0' = 'xcx4.2.0',
   'xcx4.7.1' = 'xcx4.7.1',

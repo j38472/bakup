@@ -7,6 +7,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   BaseH5st,
+  H5st410,
   H5st420,
   H5st431,
   H5st433,
@@ -29,6 +30,8 @@ import {
   H5st502,
   H5st503,
   H5st504,
+  H5st505,
+  H5st506,
   Xcx310,
   Xcx420,
   Xcx471,
@@ -41,6 +44,7 @@ export class H5stFactory {
   private instances = new Map<H5stVersion, BaseH5st>();
 
   constructor(
+    @Inject(H5st410) private readonly h5st410: H5st410,
     @Inject(H5st420) private readonly h5st420: H5st420,
     @Inject(H5st431) private readonly h5st431: H5st431,
     @Inject(H5st433) private readonly h5st433: H5st433,
@@ -63,11 +67,14 @@ export class H5stFactory {
     @Inject(H5st502) private readonly h5st502: H5st502,
     @Inject(H5st503) private readonly h5st503: H5st503,
     @Inject(H5st504) private readonly h5st504: H5st504,
+    @Inject(H5st505) private readonly h5st505: H5st505,
+    @Inject(H5st506) private readonly h5st506: H5st506,
     @Inject(Xcx310) private readonly xcx310: Xcx310,
     @Inject(Xcx420) private readonly xcx420: Xcx420,
     @Inject(Xcx471) private readonly xcx471: Xcx471,
     @Inject(Xcx491) private readonly xcx491: Xcx491,
   ) {
+    this.instances.set(H5stVersion['4.1.0'], this.h5st410);
     this.instances.set(H5stVersion['4.2.0'], this.h5st420);
     this.instances.set(H5stVersion['4.3.1'], this.h5st431);
     this.instances.set(H5stVersion['4.3.3'], this.h5st433);
@@ -90,6 +97,8 @@ export class H5stFactory {
     this.instances.set(H5stVersion['5.0.2'], this.h5st502);
     this.instances.set(H5stVersion['5.0.3'], this.h5st503);
     this.instances.set(H5stVersion['5.0.4'], this.h5st504);
+    this.instances.set(H5stVersion['5.0.5'], this.h5st505);
+    this.instances.set(H5stVersion['5.0.6'], this.h5st506);
     this.instances.set(H5stVersion['xcx3.1.0'], this.xcx310);
     this.instances.set(H5stVersion['xcx4.2.0'], this.xcx420);
     this.instances.set(H5stVersion['xcx4.7.1'], this.xcx471);

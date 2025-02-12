@@ -33,7 +33,7 @@ export class H5stReqBody {
   @Type(() => String)
   @IsNotEmpty({ message: '版本不能为空' })
   @IsEnum(H5stVersion, { message: '版本号不正确' })
-  version: H5stVersion = H5stVersion['5.0.4'];
+  version: H5stVersion = H5stVersion['5.0.6'];
 
   @Type(() => String)
   @ValidateIf((o: H5stReqBody) => o.version && !o.version.startsWith('xcx'))
