@@ -1198,6 +1198,56 @@ class H5st507AlgoConfig implements H5stAlgoConfigType {
   };
 }
 
+class H5st508AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  version = '5.0';
+  env = {
+    fv: 'h5_file_v5.0.8',
+    randomLength: 11,
+  };
+  visitKey = {
+    seed: 'qw3pa2mn87',
+    selectLength: 5,
+    randomLength: 10,
+    convertLength: 14,
+  };
+  defaultKey = {
+    extend: '+6)]v$',
+  };
+  makeSign = {
+    extendDateStr: '61',
+  };
+  genLocalTK = {
+    baseInfo: {
+      magic: 'tk',
+      version: '04',
+      platform: 'w',
+      expires: '41',
+      producer: 'l',
+      expr: '',
+      cipher: '',
+      adler32: '',
+    },
+    cipher: {
+      secret1: 'Ue<d1?SPKw5H',
+      prefix: 'SV',
+    },
+  };
+  customAlgorithm = {
+    salt: 'A5fAU=',
+    map: 'ZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcba',
+    convertIndex: {
+      hex: 1,
+      hmac: 3,
+    },
+    transformMessageOptions: {
+      map: 'jihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlk',
+      segments: 4,
+      multiplier: 22,
+    },
+  };
+}
+
 class Xcx310AlgoConfig implements H5stAlgoConfigType {
   version = '3.1';
   env = {
@@ -1391,6 +1441,7 @@ export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   [H5stVersion['5.0.5']]: new H5st505AlgoConfig(),
   [H5stVersion['5.0.6']]: new H5st506AlgoConfig(),
   [H5stVersion['5.0.7']]: new H5st507AlgoConfig(),
+  [H5stVersion['5.0.8']]: new H5st508AlgoConfig(),
   [H5stVersion['xcx3.1.0']]: new Xcx310AlgoConfig(),
   [H5stVersion['xcx4.2.0']]: new Xcx420AlgoConfig(),
   [H5stVersion['xcx4.7.1']]: new Xcx471AlgoConfig(),
