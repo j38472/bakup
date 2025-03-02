@@ -409,7 +409,9 @@ export class BaseH5st {
   async sign(params: H5stSignParamsType, h5stInitConfig: H5stInitConfig, envSignStr?: string): Promise<H5stSignParamsType & H5stSignResultType> {
     const start = Date.now();
     this.__iniConfig(Object.assign({}, new H5stInitConfig(), h5stInitConfig));
-    this.envDecrypt(envSignStr);
+    if (envSignStr) {
+      this.envDecrypt(envSignStr);
+    }
 
     const keys = this.clsService.get('h5stContext.stk');
     const filterParams: H5stSignParamsType = {};
