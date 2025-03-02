@@ -5,7 +5,7 @@
  */
 
 import { ClsService } from 'nestjs-cls';
-import { LocalTokenType, TokenType } from './type';
+import { LocalTokenType, TokenBaseInfoType } from './type';
 import { CustomAlgorithm } from '../algorithm';
 import { fromBase64, getRandomIDPro, stringToHex, toHexString, toUint8ArrayFromNumber } from '../../utils/baseUtils';
 
@@ -19,9 +19,9 @@ export class BaseLocalToken implements LocalTokenType {
    * 本地生成 token
    */
   genLocalTK(fp: string): string {
-    const h5stConfig = this.clsService.get('h5stConfig.genLocalTK.baseInfo');
+    const baseInfo = this.clsService.get('h5stContext.genLocalTK.baseInfo');
     const tokenData = {
-      ...h5stConfig,
+      ...baseInfo,
     };
 
     tokenData.expr = this.generateTokenExpr();
@@ -59,8 +59,8 @@ export class BaseLocalToken implements LocalTokenType {
    * 生成 token cipher
    */
   generateTokenCipher(fp: string): string {
-    const secret1 = this.clsService.get('h5stConfig.genLocalTK.cipher.secret1'),
-      prefix = this.clsService.get('h5stConfig.genLocalTK.cipher.prefix');
+    const secret1 = this.clsService.get('h5stContext.genLocalTK.cipher.secret1'),
+      prefix = this.clsService.get('h5stContext.genLocalTK.cipher.prefix');
 
     let tokenCipherPlain = '';
     const now = Date.now(),
@@ -77,14 +77,14 @@ export class BaseLocalToken implements LocalTokenType {
   /**
    * 生成 token adler32
    */
-  generateTokenAdler32(_: TokenType): string {
+  generateTokenAdler32(_: TokenBaseInfoType): string {
     throw new Error('请实现');
   }
 
   /**
    * 组装 token
    */
-  formatToken(tokenData: TokenType): string {
+  formatToken(tokenData: TokenBaseInfoType): string {
     return tokenData.magic + tokenData.version + tokenData.platform + tokenData.adler32 + tokenData.expires + tokenData.producer + tokenData.expr + tokenData.cipher;
   }
 

@@ -10,7 +10,7 @@ import { ClsService } from 'nestjs-cls';
 import { Cache } from 'nestjs-cache-manager-v6';
 import { H5stInitConfig } from './config';
 import { CANVAS_FP, STORAGE_FP_KEY, STORAGE_TOKEN_KEY, WEBGL_FP } from './constant';
-import { EnvCollectType, ErrCodes, H5stAlgoConfigType, H5stSignParamsType, H5stSignResultType, KVType } from './type';
+import { defaultAlgorithmType, EnvCollectType, ErrCodes, H5stAlgoConfigType, H5stSignParamsType, H5stSignResultType, KVType, SignAlgorithmType } from './type';
 import { BaseLocalToken } from '../token';
 import { CustomAlgorithm } from '../algorithm';
 import {
@@ -29,27 +29,24 @@ import {
 import { BusinessError } from '../../utils/error';
 
 export class BaseH5st {
-  protected readonly logger = new Logger(BaseH5st.name);
+  protected readonly logger: Logger;
+  protected readonly defaultAlgorithm: defaultAlgorithmType;
 
   constructor(
     protected readonly clsService: ClsService,
     protected readonly cacheManager: Cache,
-    protected readonly localToken: BaseLocalToken,
     protected readonly algos: CustomAlgorithm,
-  ) {}
-
-  init(h5stInitConfig: H5stInitConfig, h5stAlgoConfig?: H5stAlgoConfigType) {
-    const defaultAlgorithm = {
+    protected readonly h5stVersion: string,
+    protected readonly h5stAlgoConfig: H5stAlgoConfigType,
+    protected readonly localToken: BaseLocalToken,
+  ) {
+    this.defaultAlgorithm = {
       local_key_1: (message: CryptoJS.lib.WordArray | string) => this.algos.MD5(message),
       local_key_2: (message: CryptoJS.lib.WordArray | string) => this.algos.SHA256(message),
       local_key_3: (message: CryptoJS.lib.WordArray | string, key: CryptoJS.lib.WordArray | string) => this.algos.HmacSHA256(message, key),
     };
 
-    this.clsService.set('h5stConfig', h5stAlgoConfig);
-    this.clsService.set('h5stContext._defaultAlgorithm', defaultAlgorithm);
-    this.clsService.set('h5stContext._version', h5stAlgoConfig.version);
-
-    this.__iniConfig(Object.assign({}, new H5stInitConfig(), h5stInitConfig));
+    this.logger = new Logger(`H5st${h5stVersion}`);
   }
 
   /**
@@ -94,17 +91,30 @@ export class BaseH5st {
    */
   __iniConfig(config: H5stInitConfig): void {
     if ('string' !== typeof config.appId || !config.appId) {
-      this.logger.error('settings.appId must be a non-empty string', this.constructor.name);
+      this.logger.error('settings.appId must be a non-empty string');
     }
     const appId = config.appId || '';
     if (appId) {
-      const subVersion = this.clsService.get('h5stContext.subVersion');
-      this.clsService.set('h5stContext._storageFpKey', `${STORAGE_FP_KEY}_${appId}_${subVersion}`);
-      this.clsService.set('h5stContext._storageTokenKey', `${STORAGE_TOKEN_KEY}_${appId}_${subVersion}`);
+      // fp 大版本一致，但是 token 小版本不一致，区分
+      this.clsService.set('h5stContext._storageFpKey', `${STORAGE_FP_KEY}_${appId}_${this.h5stAlgoConfig.version}`);
+      this.clsService.set('h5stContext._storageTokenKey', `${STORAGE_TOKEN_KEY}_${appId}_${this.h5stVersion}`);
     }
 
     this.clsService.set('h5stContext._debug', Boolean(config.debug));
     this.clsService.set('h5stContext._appId', appId);
+
+    this.clsService.set('h5stContext._version', this.h5stAlgoConfig.version);
+    this.clsService.set('h5stContext.genLocalTK', this.h5stAlgoConfig.genLocalTK);
+    this.clsService.set('h5stContext.customAlgorithm', this.h5stAlgoConfig.customAlgorithm);
+
+    if (this.h5stAlgoConfig.version.includes('3.1.0')) {
+      // 3.1 localTk中的参数是变化量，未写死
+      const randomIDPro = getRandomIDPro({ size: 32, dictType: 'max' });
+      const prefix = randomIDPro.slice(0, 2);
+      const secret1 = randomIDPro.slice(0, 12);
+      this.clsService.set('h5stContext.genLocalTK.cipher.prefix', prefix);
+      this.clsService.set('h5stContext.genLocalTK.cipher.secret1', secret1);
+    }
 
     this._log(`create instance with appId=${appId}`);
   }
@@ -118,8 +128,7 @@ export class BaseH5st {
    * @returns {string} 签名key
    */
   __genDefaultKey(token: string, fingerprint: string, time: string, appId: string): string {
-    const defaultAlgorithm = this.clsService.get('h5stContext._defaultAlgorithm');
-    const input = `${token}${fingerprint}${time}${appId}${this.clsService.get('h5stConfig.defaultKey.extend')}`,
+    const input = `${token}${fingerprint}${time}${appId}${this.h5stAlgoConfig.defaultKey.extend}`,
       express = this.algos.enc.Utf8.stringify(this.algos.enc.Base64.parse(decodeBase64URL(this.__parseToken(token, 16, 28)))),
       expressMatch = /^[123]([x+][123])+/.exec(express);
     let key = '';
@@ -131,7 +140,7 @@ export class BaseH5st {
           if (['+', 'x'].includes(router)) keyRouter = router;
         } else {
           const algoKey = `local_key_${router}`;
-          if (defaultAlgorithm[algoKey as keyof typeof defaultAlgorithm]) {
+          if (this.defaultAlgorithm[algoKey]) {
             switch (keyRouter) {
               case '+':
                 key = `${key}${this.__algorithm(algoKey, input, token)}`;
@@ -158,7 +167,7 @@ export class BaseH5st {
    * @returns {string} 密文
    */
   __algorithm(algoKey: string, input: string, token: string): string {
-    const defaultAlgorithm = this.clsService.get('h5stContext._defaultAlgorithm');
+    const defaultAlgorithm = this.defaultAlgorithm;
 
     if (algoKey === 'local_key_3') {
       return defaultAlgorithm[algoKey](input, token).toString(this.algos.enc.Hex);
@@ -197,31 +206,56 @@ export class BaseH5st {
 
   /**
    * 生成sign (每个版本不一致，需要自定义实现)
-   * @param {string} _key __genDefaultKey或者__genKey结果
+   * @param {string} key __genDefaultKey或者__genKey结果
    * @param {object} body 请求体
    * @returns {string}
    */
-  __genSign(_key: string, body: KVType[]): string {
-    return body
-      .map((item: KVType) => {
-        return item.key + ':' + item.value;
-      })
-      .join('&');
+  __genSign(key: string, body: KVType[]): string {
+    const signAlgorithmType = this.h5stAlgoConfig.signAlgorithmType,
+      paramsStr = body
+        .map((item: KVType) => {
+          return item.key + ':' + item.value;
+        })
+        .join('&');
+    let signedStr: string;
+    if (signAlgorithmType == SignAlgorithmType.MD5_WRAP) {
+      signedStr = this.algos.MD5(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.SHA256_WRAP) {
+      signedStr = this.algos.SHA256(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.HMAC_SHA256_WRAP) {
+      signedStr = this.algos.HmacSHA256(paramsStr, key).toString(this.algos.enc.Hex);
+    } else {
+      throw new BusinessError('未指定加密模式或者不兼容的加密模式');
+    }
+    this._log(`__genSign, paramsStr:${paramsStr}, signedStr:${signedStr}`);
+    return signedStr;
   }
 
   /**
    * 4.7.4新增
-   * @param _key
+   * @param key
    * @param body
    */
-  __genSignDefault(_key: string, body: KVType[]): string {
-    // 使用body生成一个新的KVType数组，只保留key是functionId和appid的
-    const newBody = body.filter((item) => item.key === 'functionId' || item.key === 'appid');
-    return newBody
-      .map((item: KVType) => {
-        return item.key + ':' + item.value;
-      })
-      .join('&');
+  __genSignDefault(key: string, body: KVType[]): string {
+    const signAlgorithmType = this.h5stAlgoConfig.signAlgorithmType,
+      paramsStr = body
+        .filter((item) => item.key === 'functionId' || item.key === 'appid')
+        .map((item: KVType) => {
+          return item.key + ':' + item.value;
+        })
+        .join('&');
+    let signedStr: string;
+    if (signAlgorithmType == SignAlgorithmType.MD5_WRAP) {
+      signedStr = this.algos.MD5(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.SHA256_WRAP) {
+      signedStr = this.algos.SHA256(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.HMAC_SHA256_WRAP) {
+      signedStr = this.algos.HmacSHA256(paramsStr, key).toString(this.algos.enc.Hex);
+    } else {
+      throw new BusinessError('未指定加密模式或者不兼容的加密模式');
+    }
+    this._log(`__genSign, paramsStr:${paramsStr}, signedStr:${signedStr}`);
+    return signedStr;
   }
 
   /**
@@ -306,7 +340,7 @@ export class BaseH5st {
   __makeSign(params: KVType[], envSign: string): H5stSignResultType {
     const appId = this.clsService.get('h5stContext._appId'),
       fingerprint = this.clsService.get('h5stContext._fingerprint'),
-      extendDateStr = this.clsService.get('h5stConfig.makeSign.extendDateStr');
+      extendDateStr = this.h5stAlgoConfig.makeSign.extendDateStr;
 
     const now = Date.now(),
       dateStr = formatDate(now, 'yyyyMMddhhmmssSSS'),
@@ -329,7 +363,7 @@ export class BaseH5st {
 
     // 4.7.4 新增
     let signStrDefault = '';
-    if (this.clsService.get('h5stConfig.genSignDefault')) {
+    if (this.h5stAlgoConfig.genSignDefault) {
       signStrDefault = this.__genSignDefault(key, params);
     }
 
@@ -372,8 +406,10 @@ export class BaseH5st {
   /**
    * h5st 加签入口
    */
-  async sign(params: H5stSignParamsType): Promise<H5stSignParamsType & H5stSignResultType> {
+  async sign(params: H5stSignParamsType, h5stInitConfig: H5stInitConfig, envSignStr?: string): Promise<H5stSignParamsType & H5stSignResultType> {
     const start = Date.now();
+    this.__iniConfig(Object.assign({}, new H5stInitConfig(), h5stInitConfig));
+    this.envDecrypt(envSignStr);
 
     const keys = this.clsService.get('h5stContext.stk');
     const filterParams: H5stSignParamsType = {};
@@ -404,7 +440,7 @@ export class BaseH5st {
    */
   async envCollect(): Promise<EnvCollectType> {
     const envExtend = this.clsService.get('h5stContext.envExtend'),
-      randomLength = this.clsService.get('h5stConfig.env.randomLength');
+      randomLength = this.h5stAlgoConfig.env.randomLength;
 
     return this.coverEnv(envExtend, envExtend?.random?.length ?? randomLength);
   }
@@ -414,7 +450,7 @@ export class BaseH5st {
    * @returns {string}
    */
   generateVisitKey(): string {
-    const { seed, selectLength, randomLength } = this.clsService.get('h5stConfig.visitKey');
+    const { seed, selectLength, randomLength } = this.h5stAlgoConfig.visitKey;
 
     const selectedChars = selectRandomElements(seed, selectLength);
     const random = getRandomInt10();
@@ -434,7 +470,14 @@ export class BaseH5st {
   }
 
   convertVisitKey(combinedString: string): string {
-    const { convertLength } = this.clsService.get('h5stConfig.visitKey');
+    if (this.h5stAlgoConfig.version.includes('3.1.0')) {
+      const charArray = combinedString.split('');
+      const finalArray = [];
+      for (; charArray.length > 0; ) finalArray.push(9 - parseInt(charArray.pop()));
+      return finalArray.join('');
+    }
+
+    const { convertLength } = this.h5stAlgoConfig.visitKey;
 
     const charArray = combinedString.split('');
     const firstPartArray = charArray.slice(0, convertLength);
@@ -450,17 +493,17 @@ export class BaseH5st {
    */
   envSign(message: string): string {
     // 4.8.1开始不在使用AES算法，借助 Hex 魔改参数定位
-    if (!isNullOrUndefined(this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex)) {
+    if (!isNullOrUndefined(this.h5stAlgoConfig.customAlgorithm?.convertIndex?.hex)) {
       return this.algos.enc.Base64.encode(this.algos.enc.Utf8.parse(message));
     }
 
-    const secret = this.clsService.get('h5stConfig.env.secret');
+    const secret = this.h5stAlgoConfig.env.secret;
     const temp = this.algos.AES.encrypt(message, secret, {
       iv: this.algos.enc.Utf8.parse('0102030405060708'),
     });
 
     // 这里从 4.7 开始会将 AES 加密结果通过自定义的 Base64.encode 编码
-    if (this.clsService.get('h5stConfig.customAlgorithm')?.map) {
+    if (this.h5stAlgoConfig.customAlgorithm?.map) {
       return this.algos.enc.Base64.encode(temp.ciphertext);
     }
 
@@ -475,20 +518,20 @@ export class BaseH5st {
     try {
       let envDecrypt: string;
       // 4.8.1开始不在使用AES算法，借助 Hex 魔改参数定位
-      if (!isNullOrUndefined(this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex)) {
+      if (!isNullOrUndefined(this.h5stAlgoConfig.customAlgorithm?.convertIndex?.hex)) {
         const wordArray = this.algos.enc.Base64.decode(envSign);
         envDecrypt = this.algos.enc.Utf8.stringify(wordArray);
       } else {
-        const secret = this.clsService.get('h5stConfig.env.secret');
+        const secret = this.h5stAlgoConfig.env.secret;
         const decrypt = this.algos.AES.decrypt(
           this.algos.lib.CipherParams.create({
-            ciphertext: this.clsService.get('h5stConfig.customAlgorithm')?.map ? this.algos.enc.Base64.decode(envSign) : this.algos.enc.Hex.parse(envSign),
+            ciphertext: this.h5stAlgoConfig.customAlgorithm?.map ? this.algos.enc.Base64.decode(envSign) : this.algos.enc.Hex.parse(envSign),
           }),
           secret,
           { iv: this.algos.enc.Utf8.parse('0102030405060708') },
         );
         envDecrypt = decrypt.toString(this.algos.enc.Utf8);
-        const salt = this.clsService.get('h5stConfig.customAlgorithm')?.salt;
+        const salt = this.h5stAlgoConfig.customAlgorithm?.salt;
         if (salt && envDecrypt.endsWith(salt)) {
           envDecrypt = envDecrypt.slice(0, -salt.length);
         }
@@ -558,7 +601,7 @@ export class BaseH5st {
           bu7: '',
           bu8: 0,
         },
-        v: this.clsService.get('h5stConfig.env.fv'),
+        v: this.h5stAlgoConfig.env.fv,
         fp: this.clsService.get('h5stContext._fingerprint'),
       };
     }

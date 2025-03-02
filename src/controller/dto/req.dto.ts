@@ -6,9 +6,9 @@
 
 import 'reflect-metadata';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsJSON, IsNotEmpty, ValidateIf, ValidateNested } from 'class-validator';
-import { ContainsChar } from '../../utils/baseUtils';
-import { H5stSignParamsType, H5stVersion } from '../../core';
+import { IsJSON, IsNotEmpty, Validate, ValidateIf, ValidateNested } from 'class-validator';
+import { ContainsChar, IsH5stVersionConstraint } from '../../utils/baseUtils';
+import { H5stSignParamsType } from '../../core';
 
 /**
  * h5st 的业务信息，真正发送给京东的信息，这里只定义三个最常用的字段含义
@@ -32,8 +32,8 @@ export class H5stBusinessBody implements H5stSignParamsType {
 export class H5stReqBody {
   @Type(() => String)
   @IsNotEmpty({ message: '版本不能为空' })
-  @IsEnum(H5stVersion, { message: '版本号不正确' })
-  version: H5stVersion = H5stVersion['5.0.9'];
+  @Validate(IsH5stVersionConstraint)
+  version = '5.0.9';
 
   @Type(() => String)
   @ValidateIf((o: H5stReqBody) => o.version && !o.version.startsWith('xcx'))
@@ -63,7 +63,7 @@ export class H5stReqBody {
 
   debug: boolean;
 
-  stk: string[];
+  stk: string[] = ['functionId', 'appid', 'client', 'body', 'clientVersion', 'sign', 't', 'jsonp', 'seg_enc', 'verifytoken', 's_token', 'country_code', 'checkcode'];
 }
 
 export class SignReqBody {

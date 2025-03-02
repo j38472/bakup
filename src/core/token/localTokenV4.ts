@@ -6,7 +6,7 @@
 
 import { ClsService } from 'nestjs-cls';
 import { Injectable, Logger } from '@nestjs/common';
-import { TokenType } from './type';
+import { TokenBaseInfoType } from './type';
 import { BaseLocalToken } from './baseLocalToken';
 import { CustomAlgorithm } from '../algorithm';
 
@@ -25,7 +25,7 @@ export class LocalTokenV4 extends BaseLocalToken {
     return this.algos.enc.Base64.encode(this.algos.enc.Hex.parse(tokenCipherPlain));
   }
 
-  generateTokenAdler32(tokenData: TokenType) {
+  generateTokenAdler32(tokenData: TokenBaseInfoType) {
     const checksum = tokenData.magic + tokenData.version + tokenData.platform + tokenData.expires + tokenData.producer + tokenData.expr + tokenData.cipher;
     return this.algos.MD5(checksum).toString(this.algos.enc.Hex).slice(0, 8);
   }

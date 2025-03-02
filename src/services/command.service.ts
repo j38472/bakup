@@ -7,12 +7,12 @@
 import * as CryptoJS from 'crypto-js';
 import { Injectable } from '@nestjs/common';
 import { SignReqBody } from '../controller/dto/req.dto';
-import { SignService } from './sign.service';
+import { AlgoService } from './algo.service';
 import { BusinessError } from '../utils/error';
 
 @Injectable()
 export class CommandService {
-  constructor(private readonly signService: SignService) {}
+  constructor(private readonly algoService: AlgoService) {}
 
   private engRegex = /[$#@￥！][0-9A-Za-z]{6,20}[$%@!)￥！]|[2-9]{20}|[2-9]{16}/;
   private cnRegex =
@@ -40,7 +40,7 @@ export class CommandService {
       aliveMin: 1,
       commandType: commandType,
     });
-    const signRes = this.signService.getSign(signReqBody);
+    const signRes = this.algoService.getSign(signReqBody);
 
     return `https://api.m.jd.com/client.action?${signRes.qs}`;
   }

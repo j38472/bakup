@@ -5,14 +5,13 @@
  */
 
 import 'nestjs-cls';
-import { H5stAlgoConfigType, H5stAlgoContextType } from '../src/core';
+import { H5stAlgoContextType } from '../src/core';
 
 /**
  * 重新定义默认的上下文对象的类型
  */
 declare module 'nestjs-cls' {
   interface ClsStore {
-    h5stConfig?: H5stAlgoConfigType;
     h5stContext?: H5stAlgoContextType;
   }
 }

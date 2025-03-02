@@ -7,7 +7,7 @@
 /**
  * h5st token 类型
  */
-export interface TokenType {
+export interface TokenBaseInfoType {
   magic: string;
   version: string;
   platform: string;
@@ -16,6 +16,17 @@ export interface TokenType {
   expr: string;
   cipher: string;
   adler32: string;
+}
+
+export interface TokenCipherType {
+  secret1: string;
+  prefix: string;
+  secret2?: string;
+}
+
+export interface TokenType {
+  baseInfo: TokenBaseInfoType;
+  cipher: TokenCipherType;
 }
 
 export enum LocalTokenVersion {

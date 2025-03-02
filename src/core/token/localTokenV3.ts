@@ -7,7 +7,7 @@
 import * as ADLER32 from 'adler-32';
 import { ClsService } from 'nestjs-cls';
 import { Injectable, Logger } from '@nestjs/common';
-import { TokenType } from './type';
+import { TokenBaseInfoType } from './type';
 import { BaseLocalToken } from './baseLocalToken';
 import { CustomAlgorithm } from '../algorithm';
 import { fromBase64 } from '../../utils/baseUtils';
@@ -29,7 +29,7 @@ export class LocalTokenV3 extends BaseLocalToken {
    * @returns Token Cipher密文
    */
   tokenCipherEncrypt(tokenCipherPlain: string): string {
-    const secret2 = this.clsService.get('h5stConfig.genLocalTK.cipher.secret2');
+    const secret2 = this.clsService.get('h5stContext.genLocalTK.cipher.secret2');
     const b = this.algos.AES.encrypt(this.algos.enc.Hex.parse(tokenCipherPlain), this.algos.enc.Utf8.parse(secret2), {
       iv: this.algos.enc.Utf8.parse('0102030405060708'),
     });
@@ -40,7 +40,7 @@ export class LocalTokenV3 extends BaseLocalToken {
    * 生成 token adler32
    * @param tokenData
    */
-  generateTokenAdler32(tokenData: TokenType) {
+  generateTokenAdler32(tokenData: TokenBaseInfoType) {
     const checksum = ADLER32.str(tokenData.magic + tokenData.version + tokenData.platform + tokenData.expires + tokenData.producer + tokenData.expr + tokenData.cipher) >>> 0;
     return ('00000000' + checksum.toString(16)).slice(-8);
   }

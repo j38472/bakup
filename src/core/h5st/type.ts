@@ -5,7 +5,7 @@
  */
 
 import { TransformMessageOptions } from '../algorithm';
-import { TokenType } from '../token';
+import { LocalTokenVersion, TokenType } from '../token';
 
 /**
  * h5st 加签结果枚举
@@ -25,7 +25,6 @@ export interface H5stAlgoContextType {
   _storageTokenKey: string;
   _storageAlgoKey: string;
   _storageFpKey: string;
-  _defaultAlgorithm: defaultAlgorithmType;
   _version: string;
   _appId: string;
   _fingerprint: string;
@@ -34,8 +33,10 @@ export interface H5stAlgoContextType {
   envExtend?: EnvCollectType;
   userAgent: string;
   pt_pin: string;
-  subVersion: string;
   stk: string[];
+
+  genLocalTK: TokenType;
+  customAlgorithm: CustomAlgorithmType;
 }
 
 export interface defaultAlgorithmType {
@@ -44,11 +45,31 @@ export interface defaultAlgorithmType {
   local_key_3: typeof CryptoJS.HmacSHA256;
 }
 
+export interface VisitKeyType {
+  seed: string;
+  selectLength: number;
+  randomLength: number;
+  convertLength: number;
+}
+
+export interface CustomAlgorithmType {
+  salt?: string;
+  map?: string;
+  keyReverse?: boolean;
+  convertIndex?: {
+    hmac?: number;
+    hex?: number;
+  };
+  transformMessageOptions?: TransformMessageOptions;
+}
+
 /**
  * h5st 算法参数类型
  */
 export interface H5stAlgoConfigType {
   genSignDefault?: boolean;
+  tokenVersion: LocalTokenVersion;
+  signAlgorithmType: SignAlgorithmType;
   version: string;
   env: {
     secret?: string;
@@ -56,36 +77,15 @@ export interface H5stAlgoConfigType {
     fv?: string;
     randomLength: number;
   };
-  visitKey: {
-    seed: string;
-    selectLength: number;
-    randomLength: number;
-    convertLength: number;
-  };
+  visitKey: VisitKeyType;
   defaultKey: {
     extend: string;
   };
   makeSign: {
     extendDateStr: string;
   };
-  genLocalTK: {
-    baseInfo: TokenType;
-    cipher: {
-      secret1: string;
-      prefix: string;
-      secret2?: string;
-    };
-  };
-  customAlgorithm?: {
-    salt?: string;
-    map?: string;
-    keyReverse?: boolean;
-    convertIndex?: {
-      hmac?: number;
-      hex?: number;
-    };
-    transformMessageOptions?: TransformMessageOptions;
-  };
+  genLocalTK: TokenType;
+  customAlgorithm?: CustomAlgorithmType;
 }
 
 /**
@@ -151,42 +151,10 @@ export interface EnvExtendType {
   pm?: string | number;
 }
 
-/**
- * 目前支持的算法版本枚举
- */
-export enum H5stVersion {
-  '4.1.0' = '4.1.0',
-  '4.2.0' = '4.2.0',
-  '4.3.1' = '4.3.1',
-  '4.3.3' = '4.3.3',
-  '4.4.0' = '4.4.0',
-  '4.7.1' = '4.7.1',
-  '4.7.2' = '4.7.2',
-  '4.7.3' = '4.7.3',
-  '4.7.4' = '4.7.4',
-  '4.8.1' = '4.8.1',
-  '4.8.2' = '4.8.2',
-  '4.9.1' = '4.9.1',
-  '4.9.2' = '4.9.2',
-  '4.9.3' = '4.9.3',
-  '4.9.4' = '4.9.4',
-  '4.9.5' = '4.9.5',
-  '4.9.6' = '4.9.6',
-  '4.9.7' = '4.9.7',
-  '5.0.0' = '5.0.0',
-  '5.0.1' = '5.0.1',
-  '5.0.2' = '5.0.2',
-  '5.0.3' = '5.0.3',
-  '5.0.4' = '5.0.4',
-  '5.0.5' = '5.0.5',
-  '5.0.6' = '5.0.6',
-  '5.0.7' = '5.0.7',
-  '5.0.8' = '5.0.8',
-  '5.0.9' = '5.0.9',
-  'xcx3.1.0' = 'xcx3.1.0',
-  'xcx4.2.0' = 'xcx4.2.0',
-  'xcx4.7.1' = 'xcx4.7.1',
-  'xcx4.9.1' = 'xcx4.9.1',
+export enum SignAlgorithmType {
+  MD5_WRAP = 'MD5_WRAP', // MD5(`${key}${paramsStr}${key}`)
+  SHA256_WRAP = 'SHA256_WRAP', // SHA256(`${key}${paramsStr}${key}`)
+  HMAC_SHA256_WRAP = 'HMAC_SHA256_WRAP', // HmacSHA256(paramsStr, key)
 }
 
 /**

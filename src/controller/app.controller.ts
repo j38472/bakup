@@ -13,4 +13,8 @@ export class AppController {
   getHello(): ResBaseDto<string> {
     return new ResBaseDto<string>('OK');
   }
+  @Get('/')
+  getHemo(): string {
+    return '200 ok';
+  }
 }

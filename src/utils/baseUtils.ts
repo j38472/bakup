@@ -6,6 +6,7 @@
 
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { DEVICE_LISTS } from '../config';
+import { H5stAlgoConfigCollection } from '../core/h5st/config';
 
 /**
  * 将字符串进行 URL 安全的 Base64 解码
@@ -224,6 +225,18 @@ export class ContainsCharConstraint implements ValidatorConstraintInterface {
   defaultMessage(args: ValidationArguments) {
     const [char] = args.constraints as [string];
     return `Text must contain exactly 7 occurrences of '${char}'`;
+  }
+}
+
+@ValidatorConstraint({ name: 'IsH5stVersion', async: false })
+export class IsH5stVersionConstraint implements ValidatorConstraintInterface {
+  validate(value: string, _args: ValidationArguments) {
+    const validVersions = Object.keys(H5stAlgoConfigCollection);
+    return validVersions.includes(value); // 检查 value 是否是 validVersions 中的一个
+  }
+
+  defaultMessage(_args: ValidationArguments) {
+    return `版本号不正确，目前已支持版本${Object.keys(H5stAlgoConfigCollection).join('、')}`;
   }
 }
 

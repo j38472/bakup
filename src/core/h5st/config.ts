@@ -4,26 +4,174 @@
  * Author: zhx47
  */
 
-import { H5stAlgoConfigType, H5stVersion } from './type';
+import { H5stAlgoConfigType, SignAlgorithmType, VisitKeyType } from './type';
+import { LocalTokenVersion, TokenBaseInfoType } from '../token';
 
+// 默认的 h5st 配置，不打印调试参数
 export class H5stInitConfig {
   debug?: boolean = false;
   appId: string;
 }
 
+// 各个版本的 fp 参数
+class H5st31VisitKey implements VisitKeyType {
+  seed = '0123456789';
+  selectLength = 3;
+  randomLength = 12;
+  convertLength = 0;
+}
+
+class H5st41VisitKey implements VisitKeyType {
+  seed = 'uct6d0jhqw';
+  selectLength = 6;
+  randomLength = 9;
+  convertLength = 14;
+}
+
+class H5st42VisitKey implements VisitKeyType {
+  seed = '6d0jhqw3pa';
+  selectLength = 4;
+  randomLength = 11;
+  convertLength = 14;
+}
+
+class H5st43VisitKey implements VisitKeyType {
+  seed = 'kl9i1uct6d';
+  selectLength = 3;
+  randomLength = 12;
+  convertLength = 10;
+}
+
+class H5st44VisitKey implements VisitKeyType {
+  seed = '1uct6d0jhq';
+  selectLength = 4;
+  randomLength = 11;
+  convertLength = 8;
+}
+
+class H5st47VisitKey implements VisitKeyType {
+  seed = '1uct6d0jhq';
+  selectLength = 5;
+  randomLength = 10;
+  convertLength = 15;
+}
+
+class H5st48VisitKey implements VisitKeyType {
+  seed = '2mn87xbyof';
+  selectLength = 6;
+  randomLength = 9;
+  convertLength = 14;
+}
+
+class H5st49VisitKey implements VisitKeyType {
+  seed = 'z4rekl9i1u';
+  selectLength = 4;
+  randomLength = 11;
+  convertLength = 8;
+}
+
+class H5st50VisitKey implements VisitKeyType {
+  seed = 'qw3pa2mn87';
+  selectLength = 5;
+  randomLength = 10;
+  convertLength = 14;
+}
+
+const h5st31VisitKey = new H5st31VisitKey();
+const h5st41VisitKey = new H5st41VisitKey();
+const h5st42VisitKey = new H5st42VisitKey();
+const h5st43VisitKey = new H5st43VisitKey();
+const h5st44VisitKey = new H5st44VisitKey();
+const h5st47VisitKey = new H5st47VisitKey();
+const h5st48VisitKey = new H5st48VisitKey();
+const h5st49VisitKey = new H5st49VisitKey();
+const h5st50VisitKey = new H5st50VisitKey();
+
+// 各个版本 token 参数
+class BaseTokenBaseInfo implements TokenBaseInfoType {
+  magic = 'tk';
+  version = '';
+  platform = '';
+  expires = '41';
+  producer = 'l';
+  expr = '';
+  cipher = '';
+  adler32 = '';
+}
+
+class Normal02TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '02';
+  platform = 'w';
+}
+
+class Normal03TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '03';
+  platform = 'w';
+}
+
+class Normal04TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '04';
+  platform = 'w';
+}
+
+class Xcx02TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '02';
+  platform = 'a';
+}
+
+class Xcx03TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '03';
+  platform = 'a';
+}
+
+class Xcx04TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '04';
+  platform = 'a';
+}
+
+const normal02TokenBaseInfo = new Normal02TokenBaseInfo();
+const normal03TokenBaseInfo = new Normal03TokenBaseInfo();
+const normal04TokenBaseInfo = new Normal04TokenBaseInfo();
+const xcx02TokenBaseInfo = new Xcx02TokenBaseInfo();
+const xcx03TokenBaseInfo = new Xcx03TokenBaseInfo();
+const xcx04TokenBaseInfo = new Xcx04TokenBaseInfo();
+
+// 各个版本 h5st 参数
+class H5st310AlgoConfig implements H5stAlgoConfigType {
+  version = '3.1';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
+  env = {
+    secret: 'wm0!@w_s#ll1flo(',
+    randomLength: 10,
+  };
+  visitKey = h5st31VisitKey;
+  defaultKey = {
+    extend: '',
+  };
+  makeSign = {
+    extendDateStr: '',
+  };
+  genLocalTK = {
+    baseInfo: normal02TokenBaseInfo,
+    cipher: {
+      secret1: 'xxxxxxxxxxxx',
+      prefix: 'xx',
+      secret2: 'dp0!@w_s#ll0flo(',
+    },
+  };
+}
+
 class H5st410AlgoConfig implements H5stAlgoConfigType {
   version = '4.1';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   env = {
     secret: 'HL4|FW#Chc3#q?0)',
     fv: 'v0.1.6',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'uct6d0jhqw',
-    selectLength: 6,
-    randomLength: 9,
-    convertLength: 14,
-  };
+  visitKey = h5st41VisitKey;
   defaultKey = {
     extend: '2475%+',
   };
@@ -31,16 +179,7 @@ class H5st410AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '04',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal02TokenBaseInfo,
     cipher: {
       secret1: '3+1&G!q2t7n5',
       prefix: '55',
@@ -51,18 +190,15 @@ class H5st410AlgoConfig implements H5stAlgoConfigType {
 
 class H5st420AlgoConfig implements H5stAlgoConfigType {
   version = '4.2';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   env = {
     secret: 'DNiHi703B0&17hh1',
     bu1: '0.1.9',
     fv: 'h5_file_v4.2.0',
     randomLength: 10,
   };
-  visitKey = {
-    seed: '6d0jhqw3pa',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 14,
-  };
+  visitKey = h5st42VisitKey;
   defaultKey = {
     extend: '9>5*t5',
   };
@@ -70,16 +206,7 @@ class H5st420AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '74',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal02TokenBaseInfo,
     cipher: {
       secret1: 'qem7+)g%Dhw5',
       prefix: 'z7',
@@ -90,18 +217,15 @@ class H5st420AlgoConfig implements H5stAlgoConfigType {
 
 class H5st431AlgoConfig implements H5stAlgoConfigType {
   version = '4.3';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   env = {
     secret: '&d74&yWoV.EYbWbZ',
     bu1: '0.1.7',
     fv: 'h5_file_v4.3.1',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'kl9i1uct6d',
-    selectLength: 3,
-    randomLength: 12,
-    convertLength: 10,
-  };
+  visitKey = h5st43VisitKey;
   defaultKey = {
     extend: 'Z=<J_2',
   };
@@ -109,16 +233,7 @@ class H5st431AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '22',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal02TokenBaseInfo,
     cipher: {
       secret1: '+WzD<U36rlTf',
       prefix: '0J',
@@ -129,18 +244,15 @@ class H5st431AlgoConfig implements H5stAlgoConfigType {
 
 class H5st433AlgoConfig implements H5stAlgoConfigType {
   version = '4.3';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   env = {
     secret: '&d74&yWoV.EYbWbZ',
     bu1: '0.1.7',
     fv: 'h5_file_v4.3.3',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'kl9i1uct6d',
-    selectLength: 3,
-    randomLength: 12,
-    convertLength: 10,
-  };
+  visitKey = h5st43VisitKey;
   defaultKey = {
     extend: 'Z=<J_2',
   };
@@ -148,16 +260,7 @@ class H5st433AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '22',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal02TokenBaseInfo,
     cipher: {
       secret1: '+WzD<U36rlTf',
       prefix: '0J',
@@ -168,17 +271,14 @@ class H5st433AlgoConfig implements H5stAlgoConfigType {
 
 class H5st440AlgoConfig implements H5stAlgoConfigType {
   version = '4.4';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   env = {
     secret: 'r1T.6Vinpb.k+/a)',
     fv: 'v_lite_f_4.4.0',
     randomLength: 12,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st44VisitKey;
   defaultKey = {
     extend: 'qV!+A!',
   };
@@ -186,16 +286,7 @@ class H5st440AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '88',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal02TokenBaseInfo,
     cipher: {
       secret1: 'HiO81-Ei89DH',
       prefix: '(>',
@@ -206,18 +297,15 @@ class H5st440AlgoConfig implements H5stAlgoConfigType {
 
 class H5st471AlgoConfig implements H5stAlgoConfigType {
   version = '4.7';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   env = {
     secret: '_M6Y?dvfN40VMF[X',
     bu1: '0.1.5',
     fv: 'h5_file_v4.7.1',
     randomLength: 12,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 15,
-  };
+  visitKey = h5st47VisitKey;
   defaultKey = {
     extend: 'hh1BNE',
   };
@@ -225,16 +313,7 @@ class H5st471AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '97',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '03',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal03TokenBaseInfo,
     cipher: {
       secret1: '8[8I[]d?960w',
       prefix: 'cw',
@@ -253,18 +332,15 @@ class H5st471AlgoConfig implements H5stAlgoConfigType {
 
 class H5st472AlgoConfig implements H5stAlgoConfigType {
   version = '4.7';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   env = {
     secret: '_M6Y?dvfN40VMF[X',
     bu1: '0.1.5',
     fv: 'h5_file_v4.7.2',
     randomLength: 12,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 15,
-  };
+  visitKey = h5st47VisitKey;
   defaultKey = {
     extend: '87n8!-',
   };
@@ -272,16 +348,7 @@ class H5st472AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '07',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '03',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal03TokenBaseInfo,
     cipher: {
       secret1: 'K3rOqML0Qq&D',
       prefix: 'C2',
@@ -300,18 +367,15 @@ class H5st472AlgoConfig implements H5stAlgoConfigType {
 
 class H5st473AlgoConfig implements H5stAlgoConfigType {
   version = '4.7';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   env = {
     secret: '_M6Y?dvfN40VMF[X',
     bu1: '0.1.5',
     fv: 'h5_file_v4.7.3',
     randomLength: 12,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 15,
-  };
+  visitKey = h5st47VisitKey;
   defaultKey = {
     extend: 'kEjxS-',
   };
@@ -319,16 +383,7 @@ class H5st473AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '78',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '03',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal03TokenBaseInfo,
     cipher: {
       secret1: 'A._/XV*bOm%!',
       prefix: 'dl',
@@ -347,6 +402,8 @@ class H5st473AlgoConfig implements H5stAlgoConfigType {
 
 class H5st474AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.7';
   env = {
     secret: '_M6Y?dvfN40VMF[X',
@@ -354,12 +411,7 @@ class H5st474AlgoConfig implements H5stAlgoConfigType {
     fv: 'h5_file_v4.7.4',
     randomLength: 11,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 15,
-  };
+  visitKey = h5st47VisitKey;
   defaultKey = {
     extend: 'Mp(2C1',
   };
@@ -367,16 +419,7 @@ class H5st474AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '47',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '03',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal03TokenBaseInfo,
     cipher: {
       secret1: '4*iK&33Z|+6)',
       prefix: 'FX',
@@ -395,17 +438,14 @@ class H5st474AlgoConfig implements H5stAlgoConfigType {
 
 class H5st481AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '4.8';
   env = {
     fv: 'h5_file_v4.8.1',
     randomLength: 11,
   };
-  visitKey = {
-    seed: '2mn87xbyof',
-    selectLength: 6,
-    randomLength: 9,
-    convertLength: 14,
-  };
+  visitKey = h5st48VisitKey;
   defaultKey = {
     extend: 'JdM3|5',
   };
@@ -413,16 +453,7 @@ class H5st481AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '36',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'DbIAgz71j04v',
       prefix: 'mT',
@@ -440,17 +471,14 @@ class H5st481AlgoConfig implements H5stAlgoConfigType {
 
 class H5st482AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.8';
   env = {
     fv: 'h5_file_v4.8.2',
     randomLength: 11,
   };
-  visitKey = {
-    seed: '2mn87xbyof',
-    selectLength: 6,
-    randomLength: 9,
-    convertLength: 14,
-  };
+  visitKey = h5st48VisitKey;
   defaultKey = {
     extend: '0?6i#p',
   };
@@ -458,16 +486,7 @@ class H5st482AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '84',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '=9CM=q#Qr6-8',
       prefix: 'Dv',
@@ -485,17 +504,14 @@ class H5st482AlgoConfig implements H5stAlgoConfigType {
 
 class H5st491AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.1',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'SDV&6(',
   };
@@ -503,16 +519,7 @@ class H5st491AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '07',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'qodOHbSV1ik2',
       prefix: 'ba',
@@ -530,17 +537,14 @@ class H5st491AlgoConfig implements H5stAlgoConfigType {
 
 class H5st492AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.2',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: '/Xi]Ti',
   };
@@ -548,16 +552,7 @@ class H5st492AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '89',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'Tr0tY-F*crDf',
       prefix: 'id',
@@ -575,17 +570,14 @@ class H5st492AlgoConfig implements H5stAlgoConfigType {
 
 class H5st493AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.3',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'pTQEqV',
   };
@@ -593,16 +585,7 @@ class H5st493AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '77',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'UnHWNe%n]ro/',
       prefix: 'R,',
@@ -620,17 +603,14 @@ class H5st493AlgoConfig implements H5stAlgoConfigType {
 
 class H5st494AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.4',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'A!2|cP',
   };
@@ -638,16 +618,7 @@ class H5st494AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '28',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'cVH1SHb$xuK+',
       prefix: 'c%',
@@ -665,17 +636,14 @@ class H5st494AlgoConfig implements H5stAlgoConfigType {
 
 class H5st495AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.5',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'b7mP0d',
   };
@@ -683,16 +651,7 @@ class H5st495AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '69',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '74.jqb8960t7',
       prefix: '&]',
@@ -710,17 +669,14 @@ class H5st495AlgoConfig implements H5stAlgoConfigType {
 
 class H5st496AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.6',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'q00?6i',
   };
@@ -728,16 +684,7 @@ class H5st496AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '08',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '3L%G6Oz1LeTY',
       prefix: '2F',
@@ -755,17 +702,14 @@ class H5st496AlgoConfig implements H5stAlgoConfigType {
 
 class H5st497AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.9';
   env = {
     fv: 'h5_file_v4.9.7',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: ']d?960',
   };
@@ -773,16 +717,7 @@ class H5st497AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '88',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'RvI<7|NC-1g5',
       prefix: '89',
@@ -800,17 +735,14 @@ class H5st497AlgoConfig implements H5stAlgoConfigType {
 
 class H5st500AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.0',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: 'tO(X0Y',
   };
@@ -818,16 +750,7 @@ class H5st500AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '76',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '/#RfL268b74U',
       prefix: 'Z*',
@@ -850,17 +773,14 @@ class H5st500AlgoConfig implements H5stAlgoConfigType {
 
 class H5st501AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.1',
     randomLength: 13,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '7wcba&',
   };
@@ -868,16 +788,7 @@ class H5st501AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '36',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '=9pStUH7B64/',
       prefix: 'm2',
@@ -900,17 +811,14 @@ class H5st501AlgoConfig implements H5stAlgoConfigType {
 
 class H5st502AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.2',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '21pyb9',
   };
@@ -918,16 +826,7 @@ class H5st502AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '46',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'c(8?@!FJDNiH',
       prefix: '=6',
@@ -950,17 +849,14 @@ class H5st502AlgoConfig implements H5stAlgoConfigType {
 
 class H5st503AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.3',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: 'q%@S95',
   };
@@ -968,16 +864,7 @@ class H5st503AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '72',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'R(2Kiv@u.M2U',
       prefix: 'Un',
@@ -1000,17 +887,14 @@ class H5st503AlgoConfig implements H5stAlgoConfigType {
 
 class H5st504AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.4',
     randomLength: 11,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '#Qr6-8',
   };
@@ -1018,16 +902,7 @@ class H5st504AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '69',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '%Io1mj_wq%@S',
       prefix: 'U=',
@@ -1050,17 +925,14 @@ class H5st504AlgoConfig implements H5stAlgoConfigType {
 
 class H5st505AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.5',
     randomLength: 9,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: 'dU0jS0',
   };
@@ -1068,16 +940,7 @@ class H5st505AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '60',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: '&|@K3rOqML0Q',
       prefix: 'LE',
@@ -1100,17 +963,14 @@ class H5st505AlgoConfig implements H5stAlgoConfigType {
 
 class H5st506AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.6',
     randomLength: 12,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: 'crDf.u',
   };
@@ -1118,16 +978,7 @@ class H5st506AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '22',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'DbIAgz71j04v',
       prefix: 'nJ',
@@ -1150,17 +1001,14 @@ class H5st506AlgoConfig implements H5stAlgoConfigType {
 
 class H5st507AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.7',
     randomLength: 9,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '[8I[]d',
   };
@@ -1168,16 +1016,7 @@ class H5st507AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '36',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'yb9jU671lO85',
       prefix: '4K',
@@ -1200,17 +1039,14 @@ class H5st507AlgoConfig implements H5stAlgoConfigType {
 
 class H5st508AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.8',
     randomLength: 11,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '+6)]v$',
   };
@@ -1218,16 +1054,7 @@ class H5st508AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '61',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'Ue<d1?SPKw5H',
       prefix: 'SV',
@@ -1250,17 +1077,14 @@ class H5st508AlgoConfig implements H5stAlgoConfigType {
 
 class H5st509AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   version = '5.0';
   env = {
     fv: 'h5_file_v5.0.9',
     randomLength: 9,
   };
-  visitKey = {
-    seed: 'qw3pa2mn87',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 14,
-  };
+  visitKey = h5st50VisitKey;
   defaultKey = {
     extend: '7/*24R',
   };
@@ -1268,16 +1092,7 @@ class H5st509AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '49',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'w',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: normal04TokenBaseInfo,
     cipher: {
       secret1: 'EqV!+A!tmuU#',
       prefix: '(8',
@@ -1300,16 +1115,13 @@ class H5st509AlgoConfig implements H5stAlgoConfigType {
 
 class Xcx310AlgoConfig implements H5stAlgoConfigType {
   version = '3.1';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
   env = {
     secret: 'wm0!@w_s#ll1flo(',
     randomLength: 0,
   };
-  visitKey = {
-    seed: '0123456789',
-    selectLength: 3,
-    randomLength: 12,
-    convertLength: 0,
-  };
+  visitKey = h5st31VisitKey;
   defaultKey = {
     extend: '',
   };
@@ -1317,16 +1129,7 @@ class Xcx310AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'a',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: xcx02TokenBaseInfo,
     cipher: {
       secret1: 'xxxxxxxxxxxx',
       prefix: 'xx',
@@ -1337,17 +1140,14 @@ class Xcx310AlgoConfig implements H5stAlgoConfigType {
 
 class Xcx420AlgoConfig implements H5stAlgoConfigType {
   version = '4.2';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   env = {
     secret: 'DNiHi703B0&17hh1',
     fv: 'xcx_v4.2.0',
     randomLength: 10,
   };
-  visitKey = {
-    seed: '6d0jhqw3pa',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 14,
-  };
+  visitKey = h5st42VisitKey;
   defaultKey = {
     extend: '9>5*t5',
   };
@@ -1355,16 +1155,7 @@ class Xcx420AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '74',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '02',
-      platform: 'a',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: xcx02TokenBaseInfo,
     cipher: {
       secret1: 'qem7+)g%Dhw5',
       prefix: 'z7',
@@ -1375,17 +1166,14 @@ class Xcx420AlgoConfig implements H5stAlgoConfigType {
 
 class Xcx471AlgoConfig implements H5stAlgoConfigType {
   version = '4.7';
+  tokenVersion = LocalTokenVersion['03'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
   env = {
     secret: '_M6Y?dvfN40VMF[X',
     fv: 'xcx_v4.7.1',
     randomLength: 10,
   };
-  visitKey = {
-    seed: '1uct6d0jhq',
-    selectLength: 5,
-    randomLength: 10,
-    convertLength: 15,
-  };
+  visitKey = h5st47VisitKey;
   defaultKey = {
     extend: '?SPKw5',
   };
@@ -1393,16 +1181,7 @@ class Xcx471AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '22',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '03',
-      platform: 'a',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: xcx03TokenBaseInfo,
     cipher: {
       secret1: 'TY5G5cIQz9WS',
       prefix: 'LS',
@@ -1421,17 +1200,14 @@ class Xcx471AlgoConfig implements H5stAlgoConfigType {
 
 class Xcx491AlgoConfig implements H5stAlgoConfigType {
   genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
   version = '4.9';
   env = {
     fv: 'xcx_v4.9.1',
     randomLength: 10,
   };
-  visitKey = {
-    seed: 'z4rekl9i1u',
-    selectLength: 4,
-    randomLength: 11,
-    convertLength: 8,
-  };
+  visitKey = h5st49VisitKey;
   defaultKey = {
     extend: 'K.%@Ou',
   };
@@ -1439,16 +1215,7 @@ class Xcx491AlgoConfig implements H5stAlgoConfigType {
     extendDateStr: '98',
   };
   genLocalTK = {
-    baseInfo: {
-      magic: 'tk',
-      version: '04',
-      platform: 'a',
-      expires: '41',
-      producer: 'l',
-      expr: '',
-      cipher: '',
-      adler32: '',
-    },
+    baseInfo: xcx04TokenBaseInfo,
     cipher: {
       secret1: 'Ox18GNmWXl00',
       prefix: 'kM',
@@ -1465,36 +1232,37 @@ class Xcx491AlgoConfig implements H5stAlgoConfigType {
 }
 
 export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
-  [H5stVersion['4.1.0']]: new H5st410AlgoConfig(),
-  [H5stVersion['4.2.0']]: new H5st420AlgoConfig(),
-  [H5stVersion['4.3.1']]: new H5st431AlgoConfig(),
-  [H5stVersion['4.3.3']]: new H5st433AlgoConfig(),
-  [H5stVersion['4.4.0']]: new H5st440AlgoConfig(),
-  [H5stVersion['4.7.1']]: new H5st471AlgoConfig(),
-  [H5stVersion['4.7.2']]: new H5st472AlgoConfig(),
-  [H5stVersion['4.7.3']]: new H5st473AlgoConfig(),
-  [H5stVersion['4.7.4']]: new H5st474AlgoConfig(),
-  [H5stVersion['4.8.1']]: new H5st481AlgoConfig(),
-  [H5stVersion['4.8.2']]: new H5st482AlgoConfig(),
-  [H5stVersion['4.9.1']]: new H5st491AlgoConfig(),
-  [H5stVersion['4.9.2']]: new H5st492AlgoConfig(),
-  [H5stVersion['4.9.3']]: new H5st493AlgoConfig(),
-  [H5stVersion['4.9.4']]: new H5st494AlgoConfig(),
-  [H5stVersion['4.9.5']]: new H5st495AlgoConfig(),
-  [H5stVersion['4.9.6']]: new H5st496AlgoConfig(),
-  [H5stVersion['4.9.7']]: new H5st497AlgoConfig(),
-  [H5stVersion['5.0.0']]: new H5st500AlgoConfig(),
-  [H5stVersion['5.0.1']]: new H5st501AlgoConfig(),
-  [H5stVersion['5.0.2']]: new H5st502AlgoConfig(),
-  [H5stVersion['5.0.3']]: new H5st503AlgoConfig(),
-  [H5stVersion['5.0.4']]: new H5st504AlgoConfig(),
-  [H5stVersion['5.0.5']]: new H5st505AlgoConfig(),
-  [H5stVersion['5.0.6']]: new H5st506AlgoConfig(),
-  [H5stVersion['5.0.7']]: new H5st507AlgoConfig(),
-  [H5stVersion['5.0.8']]: new H5st508AlgoConfig(),
-  [H5stVersion['5.0.9']]: new H5st509AlgoConfig(),
-  [H5stVersion['xcx3.1.0']]: new Xcx310AlgoConfig(),
-  [H5stVersion['xcx4.2.0']]: new Xcx420AlgoConfig(),
-  [H5stVersion['xcx4.7.1']]: new Xcx471AlgoConfig(),
-  [H5stVersion['xcx4.9.1']]: new Xcx491AlgoConfig(),
+  '3.1.0': new H5st310AlgoConfig(),
+  '4.1.0': new H5st410AlgoConfig(),
+  '4.2.0': new H5st420AlgoConfig(),
+  '4.3.1': new H5st431AlgoConfig(),
+  '4.3.3': new H5st433AlgoConfig(),
+  '4.4.0': new H5st440AlgoConfig(),
+  '4.7.1': new H5st471AlgoConfig(),
+  '4.7.2': new H5st472AlgoConfig(),
+  '4.7.3': new H5st473AlgoConfig(),
+  '4.7.4': new H5st474AlgoConfig(),
+  '4.8.1': new H5st481AlgoConfig(),
+  '4.8.2': new H5st482AlgoConfig(),
+  '4.9.1': new H5st491AlgoConfig(),
+  '4.9.2': new H5st492AlgoConfig(),
+  '4.9.3': new H5st493AlgoConfig(),
+  '4.9.4': new H5st494AlgoConfig(),
+  '4.9.5': new H5st495AlgoConfig(),
+  '4.9.6': new H5st496AlgoConfig(),
+  '4.9.7': new H5st497AlgoConfig(),
+  '5.0.0': new H5st500AlgoConfig(),
+  '5.0.1': new H5st501AlgoConfig(),
+  '5.0.2': new H5st502AlgoConfig(),
+  '5.0.3': new H5st503AlgoConfig(),
+  '5.0.4': new H5st504AlgoConfig(),
+  '5.0.5': new H5st505AlgoConfig(),
+  '5.0.6': new H5st506AlgoConfig(),
+  '5.0.7': new H5st507AlgoConfig(),
+  '5.0.8': new H5st508AlgoConfig(),
+  '5.0.9': new H5st509AlgoConfig(),
+  'xcx3.1.0': new Xcx310AlgoConfig(),
+  'xcx4.2.0': new Xcx420AlgoConfig(),
+  'xcx4.7.1': new Xcx471AlgoConfig(),
+  'xcx4.9.1': new Xcx491AlgoConfig(),
 };

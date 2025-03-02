@@ -30,7 +30,7 @@ export class CustomAlgorithm {
   AES = {
     encrypt: (message: CryptoJS.lib.WordArray | string, key: CryptoJS.lib.WordArray | string, cfg?: CipherOption): CryptoJS.lib.CipherParams => {
       if (typeof key === 'string') {
-        if (this.clsService.get('h5stConfig.customAlgorithm')?.keyReverse) {
+        if (this.clsService.get('h5stContext.customAlgorithm')?.keyReverse) {
           key = key.split('').reverse().join('');
         }
         key = this.enc.Utf8.parse(key);
@@ -39,7 +39,7 @@ export class CustomAlgorithm {
     },
     decrypt: (ciphertext: CryptoJS.lib.CipherParams | string, key: CryptoJS.lib.WordArray | string, cfg?: CipherOption): CryptoJS.lib.WordArray => {
       if (typeof key === 'string') {
-        if (this.clsService.get('h5stConfig.customAlgorithm')?.keyReverse) {
+        if (this.clsService.get('h5stContext.customAlgorithm')?.keyReverse) {
           key = key.split('').reverse().join('');
         }
         key = this.enc.Utf8.parse(key);
@@ -69,7 +69,7 @@ export class CustomAlgorithm {
     Hex: {
       ...CryptoJS.enc.Hex,
       stringify: (wordArray: CryptoJS.lib.WordArray): string => {
-        const convertIndex = this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hex;
+        const convertIndex = this.clsService.get('h5stContext.customAlgorithm')?.convertIndex?.hex;
 
         if (isNullOrUndefined(convertIndex)) {
           return CryptoJS.enc.Hex.stringify(wordArray);
@@ -91,7 +91,7 @@ export class CustomAlgorithm {
     Base64: {
       ...CryptoJS.enc.Base64,
       encode: (wordArray: CryptoJS.lib.WordArray): string => {
-        const map = this.clsService.get('h5stConfig.customAlgorithm')?.map ?? '';
+        const map = this.clsService.get('h5stContext.customAlgorithm')?.map ?? '';
         if (!map) {
           throw new Error('该版本算法未配置相关魔改参数');
         }
@@ -130,7 +130,7 @@ export class CustomAlgorithm {
         return result.join('');
       },
       decode: (base64Str: string): CryptoJS.lib.WordArray => {
-        const map = this.clsService.get('h5stConfig.customAlgorithm')?.map ?? '';
+        const map = this.clsService.get('h5stContext.customAlgorithm')?.map ?? '';
         if (!map) {
           throw new Error('该版本算法未配置相关魔改参数');
         }
@@ -199,11 +199,11 @@ export class CustomAlgorithm {
 
   addSalt(message: CryptoJS.lib.WordArray | string): CryptoJS.lib.WordArray | string {
     if (typeof message === 'string') {
-      const transformMessageOptions = this.clsService.get('h5stConfig.customAlgorithm')?.transformMessageOptions;
+      const transformMessageOptions = this.clsService.get('h5stContext.customAlgorithm')?.transformMessageOptions;
       if (transformMessageOptions) {
         message = this.transformMessage(message, transformMessageOptions);
       }
-      const salt = this.clsService.get('h5stConfig.customAlgorithm')?.salt ?? '';
+      const salt = this.clsService.get('h5stContext.customAlgorithm')?.salt ?? '';
       return message + salt;
     }
     return message;
@@ -211,7 +211,7 @@ export class CustomAlgorithm {
 
   eKey(key: CryptoJS.lib.WordArray | string): CryptoJS.lib.WordArray | string {
     if (typeof key === 'string') {
-      const convertIndex = this.clsService.get('h5stConfig.customAlgorithm')?.convertIndex?.hmac;
+      const convertIndex = this.clsService.get('h5stContext.customAlgorithm')?.convertIndex?.hmac;
 
       if (isNullOrUndefined(convertIndex)) {
         return key;
