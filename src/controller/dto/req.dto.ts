@@ -33,7 +33,7 @@ export class H5stReqBody {
   @Type(() => String)
   @IsNotEmpty({ message: '版本不能为空' })
   @Validate(IsH5stVersionConstraint)
-  version = '5.0.9';
+  version = '5.1.0';
 
   @Type(() => String)
   @ValidateIf((o: H5stReqBody) => o.version && !o.version.startsWith('xcx'))

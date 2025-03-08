@@ -5,7 +5,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { LocalTokenVersion, BaseLocalToken, LocalTokenV3, LocalTokenV4 } from './token';
+import { LocalTokenVersion, BaseLocalToken, LocalTokenV3, LocalTokenV4, LocalTokenV5 } from './token';
 
 @Injectable()
 export class TokenFactory {
@@ -14,9 +14,11 @@ export class TokenFactory {
   constructor(
     @Inject(LocalTokenV3) private readonly localTokenV3: LocalTokenV3,
     @Inject(LocalTokenV4) private readonly localTokenV4: LocalTokenV4,
+    @Inject(LocalTokenV5) private readonly localTokenV5: LocalTokenV5,
   ) {
     this.instances.set(LocalTokenVersion['03'], this.localTokenV3);
     this.instances.set(LocalTokenVersion['04'], this.localTokenV4);
+    this.instances.set(LocalTokenVersion['05'], this.localTokenV5);
   }
 
   getInstance(key: LocalTokenVersion): BaseLocalToken | undefined {

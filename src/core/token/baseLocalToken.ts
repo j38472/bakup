@@ -19,6 +19,7 @@ export class BaseLocalToken implements LocalTokenType {
    * 本地生成 token
    */
   genLocalTK(fp: string): string {
+    this.extend();
     const baseInfo = this.clsService.get('h5stContext.genLocalTK.baseInfo');
     const tokenData = {
       ...baseInfo,
@@ -140,4 +141,6 @@ export class BaseLocalToken implements LocalTokenType {
   generateChecksum(_: Uint8Array): string {
     throw new Error('请实现');
   }
+
+  extend(): void {}
 }

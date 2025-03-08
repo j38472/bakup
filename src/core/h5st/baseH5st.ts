@@ -107,15 +107,6 @@ export class BaseH5st {
     this.clsService.set('h5stContext.genLocalTK', this.h5stAlgoConfig.genLocalTK);
     this.clsService.set('h5stContext.customAlgorithm', this.h5stAlgoConfig.customAlgorithm);
 
-    if (this.h5stAlgoConfig.version.includes('3.1.0')) {
-      // 3.1 localTk中的参数是变化量，未写死
-      const randomIDPro = getRandomIDPro({ size: 32, dictType: 'max' });
-      const prefix = randomIDPro.slice(0, 2);
-      const secret1 = randomIDPro.slice(0, 12);
-      this.clsService.set('h5stContext.genLocalTK.cipher.prefix', prefix);
-      this.clsService.set('h5stContext.genLocalTK.cipher.secret1', secret1);
-    }
-
     this._log(`create instance with appId=${appId}`);
   }
 
@@ -472,7 +463,7 @@ export class BaseH5st {
   }
 
   convertVisitKey(combinedString: string): string {
-    if (this.h5stAlgoConfig.version.includes('3.1.0')) {
+    if (this.h5stAlgoConfig.version == '3.1') {
       const charArray = combinedString.split('');
       const finalArray = [];
       for (; charArray.length > 0; ) finalArray.push(9 - parseInt(charArray.pop()));

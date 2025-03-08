@@ -77,6 +77,13 @@ class H5st50VisitKey implements VisitKeyType {
   convertLength = 14;
 }
 
+class H5st51VisitKey implements VisitKeyType {
+  seed = '0jhqw3pa2m';
+  selectLength = 3;
+  randomLength = 12;
+  convertLength = 9;
+}
+
 const h5st31VisitKey = new H5st31VisitKey();
 const h5st41VisitKey = new H5st41VisitKey();
 const h5st42VisitKey = new H5st42VisitKey();
@@ -86,6 +93,7 @@ const h5st47VisitKey = new H5st47VisitKey();
 const h5st48VisitKey = new H5st48VisitKey();
 const h5st49VisitKey = new H5st49VisitKey();
 const h5st50VisitKey = new H5st50VisitKey();
+const h5st51VisitKey = new H5st51VisitKey();
 
 // 各个版本 token 参数
 class BaseTokenBaseInfo implements TokenBaseInfoType {
@@ -114,6 +122,11 @@ class Normal04TokenBaseInfo extends BaseTokenBaseInfo {
   platform = 'w';
 }
 
+class Normal05TokenBaseInfo extends BaseTokenBaseInfo {
+  version = '05';
+  platform = 'w';
+}
+
 class Xcx02TokenBaseInfo extends BaseTokenBaseInfo {
   version = '02';
   platform = 'a';
@@ -132,6 +145,7 @@ class Xcx04TokenBaseInfo extends BaseTokenBaseInfo {
 const normal02TokenBaseInfo = new Normal02TokenBaseInfo();
 const normal03TokenBaseInfo = new Normal03TokenBaseInfo();
 const normal04TokenBaseInfo = new Normal04TokenBaseInfo();
+const normal05TokenBaseInfo = new Normal05TokenBaseInfo();
 const xcx02TokenBaseInfo = new Xcx02TokenBaseInfo();
 const xcx03TokenBaseInfo = new Xcx03TokenBaseInfo();
 const xcx04TokenBaseInfo = new Xcx04TokenBaseInfo();
@@ -155,7 +169,6 @@ class H5st310AlgoConfig implements H5stAlgoConfigType {
   genLocalTK = {
     baseInfo: normal02TokenBaseInfo,
     cipher: {
-      secret1: 'xxxxxxxxxxxx',
       prefix: 'xx',
       secret2: 'dp0!@w_s#ll0flo(',
     },
@@ -1113,6 +1126,43 @@ class H5st509AlgoConfig implements H5stAlgoConfigType {
   };
 }
 
+class H5st510AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.0',
+    randomLength: 13,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: '-d|3J2',
+  };
+  makeSign = {
+    extendDateStr: '03',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '49',
+    },
+  };
+  customAlgorithm = {
+    salt: '4C*|24',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 8,
+      hmac: 11,
+    },
+    transformMessageOptions: {
+      map: 'tsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvu',
+      segments: 5,
+      multiplier: 7,
+    },
+  };
+}
+
 class Xcx310AlgoConfig implements H5stAlgoConfigType {
   version = '3.1';
   tokenVersion = LocalTokenVersion['03'];
@@ -1131,7 +1181,6 @@ class Xcx310AlgoConfig implements H5stAlgoConfigType {
   genLocalTK = {
     baseInfo: xcx02TokenBaseInfo,
     cipher: {
-      secret1: 'xxxxxxxxxxxx',
       prefix: 'xx',
       secret2: 'ap0!@f_t#ll0flo*',
     },
@@ -1261,6 +1310,7 @@ export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   '5.0.7': new H5st507AlgoConfig(),
   '5.0.8': new H5st508AlgoConfig(),
   '5.0.9': new H5st509AlgoConfig(),
+  '5.1.0': new H5st510AlgoConfig(),
   'xcx3.1.0': new Xcx310AlgoConfig(),
   'xcx4.2.0': new Xcx420AlgoConfig(),
   'xcx4.7.1': new Xcx471AlgoConfig(),

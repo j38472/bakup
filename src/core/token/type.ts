@@ -19,7 +19,7 @@ export interface TokenBaseInfoType {
 }
 
 export interface TokenCipherType {
-  secret1: string;
+  secret1?: string;
   prefix: string;
   secret2?: string;
 }
@@ -32,6 +32,7 @@ export interface TokenType {
 export enum LocalTokenVersion {
   '03' = '03',
   '04' = '04',
+  '05' = '05',
 }
 
 export interface LocalTokenType {

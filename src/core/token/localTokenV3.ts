@@ -10,7 +10,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { TokenBaseInfoType } from './type';
 import { BaseLocalToken } from './baseLocalToken';
 import { CustomAlgorithm } from '../algorithm';
-import { fromBase64 } from '../../utils/baseUtils';
+import { fromBase64, getRandomIDPro } from '../../utils/baseUtils';
 
 @Injectable()
 export class LocalTokenV3 extends BaseLocalToken {
@@ -55,5 +55,16 @@ export class LocalTokenV3 extends BaseLocalToken {
     checksumValue >>>= 0;
     const checksumHex = '00000000' + checksumValue.toString(16);
     return checksumHex.slice(-8);
+  }
+
+  extend() {
+    if (this.clsService.get('h5stContext._version') == '3.1') {
+      // 3.1 localTk中的参数是变化量，未写死
+      const randomIDPro = getRandomIDPro({ size: 32, dictType: 'max' });
+      const prefix = randomIDPro.slice(0, 2);
+      const secret1 = randomIDPro.slice(0, 12);
+      this.clsService.set('h5stContext.genLocalTK.cipher.prefix', prefix);
+      this.clsService.set('h5stContext.genLocalTK.cipher.secret1', secret1);
+    }
   }
 }
