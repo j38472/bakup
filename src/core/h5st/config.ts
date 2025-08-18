@@ -84,6 +84,13 @@ class H5st51VisitKey implements VisitKeyType {
   convertLength = 9;
 }
 
+class H5st52VisitKey implements VisitKeyType {
+  seed = 't6d0jhqw3p';
+  selectLength = 4;
+  randomLength = 11;
+  convertLength = 9;
+}
+
 const h5st31VisitKey = new H5st31VisitKey();
 const h5st41VisitKey = new H5st41VisitKey();
 const h5st42VisitKey = new H5st42VisitKey();
@@ -94,6 +101,7 @@ const h5st48VisitKey = new H5st48VisitKey();
 const h5st49VisitKey = new H5st49VisitKey();
 const h5st50VisitKey = new H5st50VisitKey();
 const h5st51VisitKey = new H5st51VisitKey();
+const h5st52VisitKey = new H5st52VisitKey();
 
 // 各个版本 token 参数
 class BaseTokenBaseInfo implements TokenBaseInfoType {
@@ -1146,6 +1154,11 @@ class H5st510AlgoConfig implements H5stAlgoConfigType {
     baseInfo: normal05TokenBaseInfo,
     cipher: {
       prefix: '49',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrstuvwxyzABCDOPQRSTUVWXYZ_-',
+        index: 5,
+        magic: '1',
+      },
     },
   };
   customAlgorithm = {
@@ -1159,6 +1172,394 @@ class H5st510AlgoConfig implements H5stAlgoConfigType {
       map: 'tsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvu',
       segments: 5,
       multiplier: 7,
+    },
+  };
+}
+
+class H5st511AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.1',
+    randomLength: 11,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'II[dl<',
+  };
+  makeSign = {
+    extendDateStr: '60',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '2b',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrstuvwxyJKLMNOPQRSTUVWXYZ_-',
+        index: 3,
+        magic: '1',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: '-d|3J2',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 0,
+      hmac: 8,
+    },
+    transformMessageOptions: {
+      map: 'ihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkj',
+      segments: 12,
+      multiplier: 30,
+    },
+  };
+}
+
+class H5st512AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.2',
+    randomLength: 11,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'dBD?37',
+  };
+  makeSign = {
+    extendDateStr: '08',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '74',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqBCDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 5,
+        magic: '1',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'I,+$,3',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 3,
+      hmac: 5,
+    },
+    transformMessageOptions: {
+      map: 'VUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYXW',
+      segments: 11,
+      multiplier: 8,
+    },
+  };
+}
+
+class H5st513AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.3',
+    randomLength: 10,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'Tf5<9M',
+  };
+  makeSign = {
+    extendDateStr: '45',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '9e',
+      extend: {
+        dict: '0123456789abcdefqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 2,
+        magic: '3',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'tmuU#Z',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 2,
+      hmac: 3,
+    },
+    transformMessageOptions: {
+      map: 'UTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYXWV',
+      segments: 13,
+      multiplier: 2,
+    },
+  };
+}
+
+class H5st514AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.4',
+    randomLength: 13,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'D$SM04',
+  };
+  makeSign = {
+    extendDateStr: '98',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '1e',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqBCDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 4,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: ')]v$y9',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 5,
+      hmac: 13,
+    },
+    transformMessageOptions: {
+      map: 'TSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYXWVU',
+      segments: 7,
+      multiplier: 26,
+    },
+  };
+}
+
+class H5st515AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.5',
+    randomLength: 9,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: '36rlTf',
+  };
+  makeSign = {
+    extendDateStr: '40',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '64',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrsDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 3,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: '0JdM3|',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 4,
+      hmac: 10,
+    },
+    transformMessageOptions: {
+      map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+      segments: 9,
+      multiplier: 31,
+    },
+  };
+}
+
+class H5st516AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.HMAC_SHA256_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.6',
+    randomLength: 13,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: '$Yr%39',
+  };
+  makeSign = {
+    extendDateStr: '72',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '7e',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrstuvwxyzALMNOPQRSTUVWXYZ_-',
+        index: 4,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'L<x?LV',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 6,
+      hmac: 7,
+    },
+    transformMessageOptions: {
+      map: 'WVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYX',
+      segments: 9,
+      multiplier: 3,
+    },
+  };
+}
+
+class H5st517AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.7',
+    randomLength: 13,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'm-Lvc(',
+  };
+  makeSign = {
+    extendDateStr: '65',
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: 'de',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFQRSTUVWXYZ_-',
+        index: 1,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: '3|5056',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 2,
+      hmac: 14,
+    },
+    transformMessageOptions: {
+      map: 'RQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYXWVUTS',
+      segments: 7,
+      multiplier: 12,
+    },
+  };
+}
+
+class H5st518AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
+  version = '5.1';
+  env = {
+    fv: 'h5_file_v5.1.8',
+    randomLength: 9,
+  };
+  visitKey = h5st51VisitKey;
+  defaultKey = {
+    extend: 'oaE231',
+  };
+  makeSign = {
+    extendDateStr: '20',
+    offset: 6000,
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: '6b',
+      extend: {
+        dict: '0123456789abcdefghijklmnopABCDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 6,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'j-ux)r',
+    map: 'utsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwv',
+    convertIndex: {
+      hex: 9,
+      hmac: 4,
+    },
+    transformMessageOptions: {
+      map: 'onmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqp',
+      segments: 11,
+      multiplier: 28,
+    },
+  };
+}
+
+class H5st520AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
+  version = '5.2';
+  env = {
+    fv: 'h5_file_v5.2.0',
+    randomLength: 9,
+    extendRandomLength: 13,
+  };
+  visitKey = h5st52VisitKey;
+  defaultKey = {
+    extend: '8ZkMp(',
+  };
+  makeSign = {
+    extendDateStr: '86',
+    offset: 2000,
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: 'e3',
+      extend: {
+        dict: '0123456789abcdefghijklmnopqrstuvwxIJKLMNOPQRSTUVWXYZ_-',
+        index: 5,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'T8LH>v',
+    map: 'hgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkji',
+    convertIndex: {
+      hex: 1,
+      hmac: 13,
+    },
+    transformMessageOptions: {
+      map: 'PONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQ',
+      segments: 13,
+      multiplier: 15,
     },
   };
 }
@@ -1280,6 +1681,39 @@ class Xcx491AlgoConfig implements H5stAlgoConfigType {
   };
 }
 
+class Xcx492AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  tokenVersion = LocalTokenVersion['04'];
+  signAlgorithmType = SignAlgorithmType.MD5_WRAP;
+  version = '4.9';
+  env = {
+    fv: 'xcx_v4.9.2',
+    randomLength: 10,
+  };
+  visitKey = h5st49VisitKey;
+  defaultKey = {
+    extend: 'k4kEjx',
+  };
+  makeSign = {
+    extendDateStr: '48',
+  };
+  genLocalTK = {
+    baseInfo: xcx04TokenBaseInfo,
+    cipher: {
+      secret1: '056r$D8?UWI,',
+      prefix: 'V1',
+    },
+  };
+  customAlgorithm = {
+    salt: '!7xie.',
+    map: 'rqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvuts',
+    convertIndex: {
+      hex: 7,
+      hmac: 6,
+    },
+  };
+}
+
 export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   '3.1.0': new H5st310AlgoConfig(),
   '4.1.0': new H5st410AlgoConfig(),
@@ -1311,8 +1745,22 @@ export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   '5.0.8': new H5st508AlgoConfig(),
   '5.0.9': new H5st509AlgoConfig(),
   '5.1.0': new H5st510AlgoConfig(),
+  '5.1.1': new H5st511AlgoConfig(),
+  '5.1.2': new H5st512AlgoConfig(),
+  '5.1.3': new H5st513AlgoConfig(),
+  '5.1.4': new H5st514AlgoConfig(),
+  '5.1.5': new H5st515AlgoConfig(),
+  '5.1.6': new H5st516AlgoConfig(),
+  '5.1.7': new H5st517AlgoConfig(),
+  '5.1.8': new H5st518AlgoConfig(),
+  '5.2.0': new H5st520AlgoConfig(),
   'xcx3.1.0': new Xcx310AlgoConfig(),
   'xcx4.2.0': new Xcx420AlgoConfig(),
   'xcx4.7.1': new Xcx471AlgoConfig(),
   'xcx4.9.1': new Xcx491AlgoConfig(),
+  'xcx4.9.2': new Xcx492AlgoConfig(),
 };
+
+export const DEFAULT_H5ST_VERION = '5.2.0';
+export const SUPPORT_H5ST_VERION = Object.keys(H5stAlgoConfigCollection);
+export const SUPPORT_H5ST_VERION_STR = SUPPORT_H5ST_VERION.join('、') + '。默认版本：' + DEFAULT_H5ST_VERION;

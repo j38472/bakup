@@ -22,6 +22,12 @@ export interface TokenCipherType {
   secret1?: string;
   prefix: string;
   secret2?: string;
+  // tk05 新增，主要是从字典里面随机获取12位并将指定index替换成1当作secret1
+  extend?: {
+    dict: string;
+    index: number;
+    magic: string;
+  };
 }
 
 export interface TokenType {

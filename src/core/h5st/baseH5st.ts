@@ -10,7 +10,7 @@ import { ClsService } from 'nestjs-cls';
 import { Cache } from 'nestjs-cache-manager-v6';
 import { H5stInitConfig } from './config';
 import { CANVAS_FP, STORAGE_FP_KEY, STORAGE_TOKEN_KEY, WEBGL_FP } from './constant';
-import { defaultAlgorithmType, EnvCollectType, ErrCodes, H5stAlgoConfigType, H5stSignParamsType, H5stSignResultType, KVType, SignAlgorithmType } from './type';
+import { DebugParamsType, defaultAlgorithmType, EnvCollectType, ErrCodes, H5stAlgoConfigType, H5stSignParamsType, H5stSignResultType, KVType, SignAlgorithmType } from './type';
 import { BaseLocalToken } from '../token';
 import { CustomAlgorithm } from '../algorithm';
 import {
@@ -187,12 +187,14 @@ export class BaseH5st {
    * @param {string} timeStr yyyyMMddhhmmssSSS日期
    * @param {string} envSign
    * @param signStrDefault
+   * @param signStkStr
    * @returns {string}
    */
-  __genSignParams(bodySign: string, timestamp: number, timeStr: string, envSign: string, signStrDefault?: string): string {
+  __genSignParams(bodySign: string, timestamp: number, timeStr: string, envSign: string, signStrDefault?: string, signStkStr?: string): string {
     const { _fingerprint, _appId, _isNormal, _token, _defaultToken, _version } = this.clsService.get('h5stContext');
     signStrDefault = signStrDefault ? `;${signStrDefault}` : '';
-    return `${timeStr};${_fingerprint};${_appId};${_isNormal ? _token : _defaultToken};${bodySign};${_version};${timestamp};${envSign}${signStrDefault}`;
+    signStkStr = signStkStr ? `;${signStkStr}` : '';
+    return `${timeStr};${_fingerprint};${_appId};${_isNormal ? _token : _defaultToken};${bodySign};${_version};${timestamp};${envSign}${signStrDefault}${signStkStr}`;
   }
 
   /**
@@ -208,16 +210,7 @@ export class BaseH5st {
           return item.key + ':' + item.value;
         })
         .join('&');
-    let signedStr: string;
-    if (signAlgorithmType == SignAlgorithmType.MD5_WRAP) {
-      signedStr = this.algos.MD5(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
-    } else if (signAlgorithmType == SignAlgorithmType.SHA256_WRAP) {
-      signedStr = this.algos.SHA256(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
-    } else if (signAlgorithmType == SignAlgorithmType.HMAC_SHA256_WRAP) {
-      signedStr = this.algos.HmacSHA256(paramsStr, key).toString(this.algos.enc.Hex);
-    } else {
-      throw new BusinessError('未指定加密模式或者不兼容的加密模式');
-    }
+    const signedStr = this.genSign(signAlgorithmType, key, paramsStr);
     this._log(`__genSign, paramsStr:${paramsStr}, signedStr:${signedStr}`);
     return signedStr;
   }
@@ -229,33 +222,28 @@ export class BaseH5st {
    */
   __genSignDefault(key: string, body: KVType[]): string {
     const signAlgorithmType = this.h5stAlgoConfig.signAlgorithmType,
-      paramsStr = body
-        .filter((item) => item.key === 'functionId' || item.key === 'appid')
-        .map((item: KVType) => {
-          return item.key + ':' + item.value;
-        })
-        .join('&');
-    let signedStr: string;
-    if (signAlgorithmType == SignAlgorithmType.MD5_WRAP) {
-      signedStr = this.algos.MD5(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
-    } else if (signAlgorithmType == SignAlgorithmType.SHA256_WRAP) {
-      signedStr = this.algos.SHA256(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
-    } else if (signAlgorithmType == SignAlgorithmType.HMAC_SHA256_WRAP) {
-      signedStr = this.algos.HmacSHA256(paramsStr, key).toString(this.algos.enc.Hex);
-    } else {
-      throw new BusinessError('未指定加密模式或者不兼容的加密模式');
-    }
-    this._log(`__genSign, paramsStr:${paramsStr}, signedStr:${signedStr}`);
+      paramsStr =
+        this.h5stVersion == '5.2.0'
+          ? 'appId:appid&functionId:functionId'
+          : body
+              .filter((item) => item.key === 'functionId' || item.key === 'appid')
+              .map((item: KVType) => {
+                return item.key + ':' + item.value;
+              })
+              .join('&');
+    const signedStr = this.genSign(signAlgorithmType, key, paramsStr);
+    this._log(`__genSignDefault, paramsStr:${paramsStr}, signedStr:${signedStr}`);
     return signedStr;
   }
 
   /**
    * 获取依赖信息（LITE仅获取fp， 非LITE算法需要请求algo接口获取tk和__genKey算法）
+   * @param debugParams 调试参数
    * @returns {void}
    */
-  async __requestDeps(): Promise<void> {
+  async __requestDeps(debugParams: DebugParamsType): Promise<void> {
     this._log('__requestDeps start.');
-    let fingerprint = await this.getSync(this.clsService.get('h5stContext._storageFpKey'));
+    let fingerprint = debugParams?.fingerprint || (await this.getSync(this.clsService.get('h5stContext._storageFpKey')));
     if (fingerprint) {
       this._log(`__requestDeps use cache fp, fp:${fingerprint}`);
     } else {
@@ -327,17 +315,19 @@ export class BaseH5st {
    * h5st 加签
    * @param params 需要参与加签的请求内容，已格式化为 key - value 格式
    * @param envSign env 加密字符串
+   * @param debugParams 调试参数
    */
-  __makeSign(params: KVType[], envSign: string): H5stSignResultType {
+  __makeSign(params: KVType[], envSign: string, debugParams: DebugParamsType): H5stSignResultType {
     const appId = this.clsService.get('h5stContext._appId'),
       fingerprint = this.clsService.get('h5stContext._fingerprint'),
-      extendDateStr = this.h5stAlgoConfig.makeSign.extendDateStr;
+      extendDateStr = this.h5stAlgoConfig.makeSign.extendDateStr,
+      offset = this.h5stAlgoConfig.makeSign.offset || 0;
 
-    const now = Date.now(),
-      dateStr = formatDate(now, 'yyyyMMddhhmmssSSS'),
+    const now = debugParams?.timestamp || Date.now(),
+      dateStr = formatDate(now + offset, 'yyyyMMddhhmmssSSS'),
       dateStrExtend = dateStr + extendDateStr;
 
-    const defaultToken = this.localToken.genLocalTK(fingerprint);
+    const defaultToken = debugParams?.token || this.localToken.genLocalTK(fingerprint);
 
     const key = this.__genDefaultKey(defaultToken, fingerprint, dateStrExtend, appId);
     this.clsService.set('h5stContext._defaultToken', defaultToken);
@@ -358,7 +348,13 @@ export class BaseH5st {
       signStrDefault = this.__genSignDefault(key, params);
     }
 
-    const h5st = this.__genSignParams(signStr, now, dateStr, envSign, signStrDefault);
+    // 5.1.3 新增
+    let signStkStr = '';
+    if (this.h5stAlgoConfig.genSignStk) {
+      signStkStr = this.algos.enc.Base64.encode(this.algos.enc.Utf8.parse(stk));
+    }
+
+    const h5st = this.__genSignParams(signStr, now, dateStr, envSign, signStrDefault, signStkStr);
 
     this._log(
       '__makeSign, result:' +
@@ -383,11 +379,12 @@ export class BaseH5st {
 
   /**
    * 收集环境信息，env 加密
+   * @param debugParams 调试参数
    */
-  async __collect() {
+  async __collect(debugParams: DebugParamsType) {
     const fingerprint = this.clsService.get('h5stContext._fingerprint');
 
-    const env = await this.envCollect();
+    const env = debugParams?.env || (await this.envCollect());
     env.fp = fingerprint;
     const envStr = JSON.stringify(env, null, 2);
     this._log(`__collect envCollect=${envStr}`);
@@ -397,7 +394,7 @@ export class BaseH5st {
   /**
    * h5st 加签入口
    */
-  async sign(params: H5stSignParamsType, h5stInitConfig: H5stInitConfig, envSignStr?: string): Promise<H5stSignParamsType & H5stSignResultType> {
+  async sign(params: H5stSignParamsType, h5stInitConfig: H5stInitConfig, envSignStr?: string, debugParams?: DebugParamsType): Promise<H5stSignParamsType & H5stSignResultType> {
     const start = Date.now();
     this.__iniConfig(Object.assign({}, new H5stInitConfig(), h5stInitConfig));
     if (envSignStr) {
@@ -420,9 +417,9 @@ export class BaseH5st {
     if (checkParams == null) {
       return filterParams;
     }
-    await this.__requestDeps();
-    const envSign = await this.__collect();
-    const makeSign = this.__makeSign(checkParams, envSign);
+    await this.__requestDeps(debugParams);
+    const envSign = await this.__collect(debugParams);
+    const makeSign = this.__makeSign(checkParams, envSign, debugParams);
     this._log(`sign elapsed time!${Date.now() - start}ms`);
     return Object.assign({}, filterParams, makeSign);
   }
@@ -433,9 +430,10 @@ export class BaseH5st {
    */
   async envCollect(): Promise<EnvCollectType> {
     const envExtend = this.clsService.get('h5stContext.envExtend'),
-      randomLength = this.h5stAlgoConfig.env.randomLength;
+      randomLength = this.h5stAlgoConfig.env.randomLength,
+      extendRandomLength = this.h5stAlgoConfig.env.extendRandomLength;
 
-    return this.coverEnv(envExtend, envExtend?.random?.length ?? randomLength);
+    return this.coverEnv(envExtend, envExtend?.random?.length ?? randomLength, envExtend?.extend?.random?.length ?? extendRandomLength);
   }
 
   /**
@@ -538,11 +536,13 @@ export class BaseH5st {
   /**
    * 将接口提供的 Env 对象进行部分变量的针对应覆盖，生成一个新的 Env 对象
    * @param envExtend 接口提供的官方生成的 Env 解密对象
-   * @param randomLength extend.random 的长度
+   * @param randomLength env.random 的长度
+   * @param extendRandomLength env.extend.random 的长度
    * @returns 新的 Env 对象
    */
-  private async coverEnv(envExtend: EnvCollectType, randomLength: number): Promise<EnvCollectType> {
+  private async coverEnv(envExtend: EnvCollectType, randomLength: number, extendRandomLength: number): Promise<EnvCollectType> {
     const { pt_pin, userAgent } = this.clsService.get('h5stContext');
+    const extend = this.clsService.get('h5stContext.genLocalTK.cipher.extend');
 
     const canvas = await this.getCanvasFp(),
       webglFp = await this.getWebgFp();
@@ -557,7 +557,13 @@ export class BaseH5st {
         }
         return {};
       })(),
-      random: getRandomIDPro({ size: randomLength, dictType: 'max' }),
+      random: getRandomIDPro({
+        size: randomLength,
+        dictType: 'max',
+        customDict: extend?.dict,
+        index: extend?.index,
+        magic: extend?.magic,
+      }),
       sua: (() => {
         const regex = new RegExp('Mozilla/5.0 \\((.*?)\\)');
         const matches = regex.exec(userAgent);
@@ -598,6 +604,16 @@ export class BaseH5st {
         fp: this.clsService.get('h5stContext._fingerprint'),
       };
     }
+
+    if (extendRandomLength) {
+      envExtend.extend.random = getRandomIDPro({
+        size: extendRandomLength,
+        dictType: 'max',
+        customDict: extend?.dict,
+        index: extend?.index,
+        magic: extend?.magic,
+      });
+    }
     return envExtend;
   }
 
@@ -625,5 +641,17 @@ export class BaseH5st {
       await this.setSync(WEBGL_FP, webglFp, 3600 * 24 * 365 * 1000);
     }
     return webglFp;
+  }
+
+  private genSign(signAlgorithmType: SignAlgorithmType | SignAlgorithmType.SHA256_WRAP | SignAlgorithmType.HMAC_SHA256_WRAP, key: string, paramsStr: string) {
+    if (signAlgorithmType == SignAlgorithmType.MD5_WRAP) {
+      return this.algos.MD5(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.SHA256_WRAP) {
+      return this.algos.SHA256(`${key}${paramsStr}${key}`).toString(this.algos.enc.Hex);
+    } else if (signAlgorithmType == SignAlgorithmType.HMAC_SHA256_WRAP) {
+      return this.algos.HmacSHA256(paramsStr, key).toString(this.algos.enc.Hex);
+    } else {
+      throw new BusinessError('未指定加密模式或者不兼容的加密模式');
+    }
   }
 }

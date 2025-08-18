@@ -4,6 +4,7 @@
  * Author: zhx47
  */
 
+import * as process from 'node:process';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -11,6 +12,7 @@ import { AppModule } from './app.module';
 import { AppClusterService } from './app_cluster.service';
 import { BusinessExceptionFilter } from './filter/business-exception.filter';
 import { ValidationExceptionFilter } from './filter/validation-exception.filter';
+import { isNullOrUndefined } from './utils/baseUtils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -32,7 +34,8 @@ async function bootstrap() {
   // 开启跨域
   app.enableCors();
 
-  await app.listen(3001);
+  const port = isNullOrUndefined(process.env.PORT) ? 3001 : Number(process.env.PORT);
+  await app.listen(port);
 }
 
 // bootstrap();

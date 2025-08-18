@@ -6,9 +6,10 @@
 
 import 'reflect-metadata';
 import { Transform, Type } from 'class-transformer';
-import { IsJSON, IsNotEmpty, Validate, ValidateIf, ValidateNested } from 'class-validator';
-import { ContainsChar, IsH5stVersionConstraint } from '../../utils/baseUtils';
-import { H5stSignParamsType } from '../../core';
+import { IsIn, IsJSON, IsNotEmpty, ValidateIf, ValidateNested } from 'class-validator';
+import { ContainsChar } from '../../utils/baseUtils';
+import { DebugParamsType, H5stSignParamsType } from '../../core';
+import { DEFAULT_H5ST_VERION, SUPPORT_H5ST_VERION, SUPPORT_H5ST_VERION_STR } from '../../core/h5st/config';
 
 /**
  * h5st 的业务信息，真正发送给京东的信息，这里只定义三个最常用的字段含义
@@ -32,8 +33,8 @@ export class H5stBusinessBody implements H5stSignParamsType {
 export class H5stReqBody {
   @Type(() => String)
   @IsNotEmpty({ message: '版本不能为空' })
-  @Validate(IsH5stVersionConstraint)
-  version = '5.1.0';
+  @IsIn(SUPPORT_H5ST_VERION, { message: `无效的版本: ${SUPPORT_H5ST_VERION_STR}` })
+  version = DEFAULT_H5ST_VERION;
 
   @Type(() => String)
   @ValidateIf((o: H5stReqBody) => o.version && !o.version.startsWith('xcx'))
@@ -53,7 +54,7 @@ export class H5stReqBody {
   @Type(() => String)
   @Transform(({ value }): string => decodeURIComponent(value as string))
   @ValidateIf((o: H5stReqBody) => !!o.h5st)
-  @ContainsChar(';', [7, 8], { message: 'h5st非法' })
+  @ContainsChar(';', [7, 8, 9], { message: 'h5st非法' })
   h5st: string;
 
   @Type(() => String)
@@ -62,6 +63,8 @@ export class H5stReqBody {
   appId: string;
 
   debug: boolean;
+
+  debugParams: DebugParamsType;
 
   stk: string[] = ['functionId', 'appid', 'client', 'body', 'clientVersion', 'sign', 't', 'jsonp', 'seg_enc', 'verifytoken', 's_token', 'country_code', 'checkcode'];
 }

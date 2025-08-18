@@ -68,6 +68,7 @@ export interface CustomAlgorithmType {
  */
 export interface H5stAlgoConfigType {
   genSignDefault?: boolean;
+  genSignStk?: boolean;
   tokenVersion: LocalTokenVersion;
   signAlgorithmType: SignAlgorithmType;
   version: string;
@@ -76,6 +77,7 @@ export interface H5stAlgoConfigType {
     bu1?: string;
     fv?: string;
     randomLength: number;
+    extendRandomLength?: number;
   };
   visitKey: VisitKeyType;
   defaultKey: {
@@ -83,6 +85,7 @@ export interface H5stAlgoConfigType {
   };
   makeSign: {
     extendDateStr: string;
+    offset?: number;
   };
   genLocalTK: TokenType;
   customAlgorithm?: CustomAlgorithmType;
@@ -149,6 +152,7 @@ export interface EnvExtendType {
   wd?: string | number;
   wk?: string | number;
   pm?: string | number;
+  random?: string;
 }
 
 export enum SignAlgorithmType {
@@ -196,4 +200,11 @@ export interface SignResultType {
   st: number;
   sv: string;
   sign: string;
+}
+
+export interface DebugParamsType {
+  timestamp: number;
+  fingerprint: string;
+  token: string;
+  env: EnvCollectType;
 }

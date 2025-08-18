@@ -22,11 +22,13 @@ export class LocalTokenV5 extends LocalTokenV4 {
   }
 
   extend() {
-    const randomIDPro = getRandomIDPro({
-        size: 12,
-        customDict: '0123456789abcdefghijklmnopqrstuvwxyzABCDOPQRSTUVWXYZ_-',
-      }),
-      secret1 = randomIDPro.substring(0, 5) + '1' + randomIDPro.substring(5, randomIDPro.length - 1);
+    const { dict, index, magic } = this.clsService.get('h5stContext.genLocalTK.cipher.extend');
+    const secret1 = getRandomIDPro({
+      size: 12,
+      customDict: dict,
+      index,
+      magic,
+    });
     this.clsService.set('h5stContext.genLocalTK.cipher.secret1', secret1);
   }
 }

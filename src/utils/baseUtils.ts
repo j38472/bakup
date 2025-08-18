@@ -6,7 +6,6 @@
 
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { DEVICE_LISTS } from '../config';
-import { H5stAlgoConfigCollection } from '../core/h5st/config';
 
 /**
  * 将字符串进行 URL 安全的 Base64 解码
@@ -26,6 +25,8 @@ export class RandomIDProConfig {
   size = 10;
   dictType?: string = 'number';
   customDict?: string;
+  index?: number;
+  magic?: string;
 }
 
 /**
@@ -33,8 +34,10 @@ export class RandomIDProConfig {
  * @param size 字符串长度
  * @param dictType 字符串字典模板，默认纯数字 alphabet：大小写字母 max：数字+大小写字母+_-
  * @param customDict 自定义字符串字典
+ * @param index 扩展自定义魔数替换位置
+ * @param magic 扩展自定义魔数
  */
-export function getRandomIDPro({ size, dictType, customDict }: RandomIDProConfig): string {
+export function getRandomIDPro({ size, dictType, customDict, index, magic }: RandomIDProConfig): string {
   let random = '';
   if (!customDict) {
     switch (dictType) {
@@ -49,6 +52,11 @@ export function getRandomIDPro({ size, dictType, customDict }: RandomIDProConfig
     }
   }
   for (; size--; ) random += customDict[(Math.random() * customDict.length) | 0];
+
+  if (!isNullOrUndefined(index) && !isNullOrUndefined(magic)) {
+    random = random.substring(0, index) + magic + random.substring(index, random.length - 1);
+  }
+
   return random;
 }
 
@@ -225,18 +233,6 @@ export class ContainsCharConstraint implements ValidatorConstraintInterface {
   defaultMessage(args: ValidationArguments) {
     const [char] = args.constraints as [string];
     return `Text must contain exactly 7 occurrences of '${char}'`;
-  }
-}
-
-@ValidatorConstraint({ name: 'IsH5stVersion', async: false })
-export class IsH5stVersionConstraint implements ValidatorConstraintInterface {
-  validate(value: string, _args: ValidationArguments) {
-    const validVersions = Object.keys(H5stAlgoConfigCollection);
-    return validVersions.includes(value); // 检查 value 是否是 validVersions 中的一个
-  }
-
-  defaultMessage(_args: ValidationArguments) {
-    return `版本号不正确，目前已支持版本${Object.keys(H5stAlgoConfigCollection).join('、')}`;
   }
 }
 

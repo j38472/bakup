@@ -8,10 +8,12 @@ import * as os from 'os';
 import { Cluster } from 'cluster';
 import { Logger } from '@nestjs/common';
 import * as clusterModule from 'cluster';
+import * as process from 'node:process';
+import { isNullOrUndefined } from './utils/baseUtils';
 
 const cluster = clusterModule as unknown as Cluster;
 
-const numCPUs = os.cpus().length;
+const numCPUs = isNullOrUndefined(process.env.THREAD_NUM) ? os.cpus().length : Number(process.env.THREAD_NUM);
 
 export class AppClusterService {
   private static readonly logger = new Logger(AppClusterService.name);
