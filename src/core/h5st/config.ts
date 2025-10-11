@@ -1564,6 +1564,51 @@ class H5st520AlgoConfig implements H5stAlgoConfigType {
   };
 }
 
+class H5st521AlgoConfig implements H5stAlgoConfigType {
+  genSignDefault = true;
+  genSignStk = true;
+  tokenVersion = LocalTokenVersion['05'];
+  signAlgorithmType = SignAlgorithmType.SHA256_WRAP;
+  version = '5.2';
+  env = {
+    fv: 'h5_file_v5.2.1',
+    randomLength: 11,
+    extendRandomLength: 12,
+  };
+  visitKey = h5st52VisitKey;
+  defaultKey = {
+    extend: 'inpb.k',
+  };
+  makeSign = {
+    extendDateStr: '82',
+    offset: 4000,
+  };
+  genLocalTK = {
+    baseInfo: normal05TokenBaseInfo,
+    cipher: {
+      prefix: 'af',
+      extend: {
+        dict: '0123456789klmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-',
+        index: 4,
+        magic: '2',
+      },
+    },
+  };
+  customAlgorithm = {
+    salt: 'xS-d|3',
+    map: 'hgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvutsrqponmlkji',
+    convertIndex: {
+      hex: 6,
+      hmac: 9,
+    },
+    transformMessageOptions: {
+      map: 'srqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA-_9876543210zyxwvut',
+      segments: 4,
+      multiplier: 2,
+    },
+  };
+}
+
 class Xcx310AlgoConfig implements H5stAlgoConfigType {
   version = '3.1';
   tokenVersion = LocalTokenVersion['03'];
@@ -1754,6 +1799,7 @@ export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   '5.1.7': new H5st517AlgoConfig(),
   '5.1.8': new H5st518AlgoConfig(),
   '5.2.0': new H5st520AlgoConfig(),
+  '5.2.1': new H5st521AlgoConfig(),
   'xcx3.1.0': new Xcx310AlgoConfig(),
   'xcx4.2.0': new Xcx420AlgoConfig(),
   'xcx4.7.1': new Xcx471AlgoConfig(),
@@ -1761,6 +1807,6 @@ export const H5stAlgoConfigCollection: Record<string, H5stAlgoConfigType> = {
   'xcx4.9.2': new Xcx492AlgoConfig(),
 };
 
-export const DEFAULT_H5ST_VERION = '5.2.0';
+export const DEFAULT_H5ST_VERION = '5.2.1';
 export const SUPPORT_H5ST_VERION = Object.keys(H5stAlgoConfigCollection);
 export const SUPPORT_H5ST_VERION_STR = SUPPORT_H5ST_VERION.join('、') + '。默认版本：' + DEFAULT_H5ST_VERION;
