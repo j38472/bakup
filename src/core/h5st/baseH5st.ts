@@ -223,16 +223,13 @@ export class BaseH5st {
   __genSignDefault(key: string, body: KVType[]): string {
     const signAlgorithmType = this.h5stAlgoConfig.signAlgorithmType,
       paramsStr =
-        this.h5stVersion == '5.2.1'
-          ? 'appid:appId&functionId:functionId'
-          : this.h5stVersion == '5.2.0'
-            ? 'appId:appid&functionId:functionId'
-            : body
-                .filter((item) => item.key === 'functionId' || item.key === 'appid')
-                .map((item: KVType) => {
-                  return item.key + ':' + item.value;
-                })
-                .join('&');
+        this.h5stAlgoConfig.genSignDefaultStr ||
+        body
+          .filter((item) => item.key === 'functionId' || item.key === 'appid')
+          .map((item: KVType) => {
+            return item.key + ':' + item.value;
+          })
+          .join('&');
     const signedStr = this.genSign(signAlgorithmType, key, paramsStr);
     this._log(`__genSignDefault, paramsStr:${paramsStr}, signedStr:${signedStr}`);
     return signedStr;

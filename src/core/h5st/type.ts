@@ -68,6 +68,7 @@ export interface CustomAlgorithmType {
  */
 export interface H5stAlgoConfigType {
   genSignDefault?: boolean;
+  genSignDefaultStr?: string;
   genSignStk?: boolean;
   tokenVersion: LocalTokenVersion;
   signAlgorithmType: SignAlgorithmType;
