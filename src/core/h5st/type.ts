@@ -147,7 +147,11 @@ export interface EnvExtendType {
   bu6?: string | number;
   bu7?: string | number;
   bu8?: string | number;
+  bu9?: string | number;
   bu10?: string | number;
+  bu11?: string | number;
+  bu12?: string | number;
+  bu13?: string | number;
   l?: string | number;
   ls?: string | number;
   wd?: string | number;
